@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="40.5" height="40.5" version="1.1" viewBox="0 0 8.1 8.1" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
+	<g transform="translate(-2.8055 -49.312)">
+		<g transform="matrix(.2 0 0 .2 2.8555 49.362)" stroke="#fff" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2.5">
+			<line x1="15" x2="25" y1="15" y2="25"/>
+			<line x1="25" x2="15" y1="15" y2="25"/>
+			<circle class="circle" cx="20" cy="20" r="19" fill="none" opacity="0"/>
+		</g>
+	</g>
+</svg>
