@@ -214,10 +214,10 @@ function buildCalculator(containerEle, options){
 		}, baseArmor);
 		addResult("Total armor", totalArmor, undefined, armorItemColor, "Total armor including all modifiers.");
 		var physicalDrFromArmor = Math.min(0.85, calculateArmorDr(totalArmor, data.enemyLevel));
-		addResult("Physical DR vs lvl " + data.enemyLevel + " monsters", Math.round(physicalDrFromArmor * 100) + "%",
+		addResult("Physical DR vs lvl " + data.enemyLevel + " monsters", Math.round(physicalDrFromArmor * 100).toLocaleString() + "%",
 				undefined, armorItemColor, "Physical damage reduction based on total armor and enemy level.");
 		var armorDiffToCap = calculateMissingOrExcessArmor(totalArmor, data.enemyLevel);
-		addResult("Armor required for 85% cap", "approx. " + Math.round(armorDiffToCap),
+		addResult("Armor required for 85% cap", "approx. " + Math.round(armorDiffToCap).toLocaleString(),
 				undefined, armorItemColorAlt, "Approx. armor required to reach 85% DR cap vs given monster level. Based on findings and formula by SkyLineOW.", true);
 		addCustom("<hr>", "flat");
 		
@@ -254,7 +254,7 @@ function buildCalculator(containerEle, options){
 			dmgLeftPct *= 0.9;
 		}
 		var totalDr = (1.0 - dmgLeftPct);
-		addResult("Total damage reduction", Math.round(totalDr * 100) + "%", undefined, reductionModColor,
+		addResult("Total damage reduction", Math.round(totalDr * 100).toLocaleString() + "%", undefined, reductionModColor,
 				"Total damage reduction applying all percentages.");
 		addCustom("<hr>", "flat");
 		
