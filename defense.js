@@ -218,29 +218,29 @@ function buildCalculator(containerEle, options){
 				undefined, armorItemColor, "Physical damage reduction based on total armor and enemy level.");
 		var armorDiffToCap = calculateMissingOrExcessArmor(totalArmor, data.enemyLevel);
 		addResult("Armor required for 85% cap", "approx. " + Math.round(armorDiffToCap).toLocaleString(),
-				undefined, armorItemColorAlt, "Approx. armor required to reach 85% DR cap vs given monster level. Based on findings and formula by SkyLineOW.", true);
+				undefined, armorItemColorAlt, "Approx. armor required to reach 85% DR cap vs given monster level.\nBased on findings and formula by SkyLineOW.", true);
 		addCustom("<hr>", "flat");
 		
 		//life
 		var baseLife = data.baseLife;
-		//addResult("Base life", baseLife, undefined, lifeItemColor, "Base life resulting from character level.");
-		var baseLifeWithGear = data.maxlifeItems.reduce(function(totalHp, item){
+		addResult("Base life", baseLife, undefined, lifeItemColorAlt, "Life determined by your character level.", true);
+		var maximumLifeMulti = data.maxlifeModifiers.reduce(function(totalHp, item){
+			if (item.disabled) return totalHp;
+			else {
+				var addLife = totalHp * (item.pct/100);
+				addResult("+ " + item.info, addLife, undefined, lifeItemColorAlt,
+					"Flat contribution of the modifier at this specific point in the calculation (depends on the order).", true);
+				return (totalHp + addLife);
+			}
+		}, baseLife);
+		addResult("Modified life", maximumLifeMulti, undefined, lifeItemColor, "Life after multiplicative modifiers.");
+		var maximumLife = data.maxlifeItems.reduce(function(totalHp, item){
 			if (item.disabled) return totalHp;
 			else {
 				return (totalHp + item.life);
 			}
-		}, baseLife);
-		addResult("Base life with gear", baseLifeWithGear, undefined, lifeItemColor, "Base life including all additive values.");
-		var maximumLife = data.maxlifeModifiers.reduce(function(totalHp, item){
-			if (item.disabled) return totalHp;
-			else {
-				var addLife = baseLifeWithGear * (item.pct/100);
-				addResult("+ " + item.info, addLife, undefined, lifeItemColorAlt,
-					"Contribution of this item.", true);
-				return (totalHp + addLife);
-			}
-		}, baseLifeWithGear);
-		addResult("Maximum life", maximumLife, undefined, lifeItemColor, "Maximum life with all modifiers.");
+		}, maximumLifeMulti);
+		addResult("Maximum life", maximumLife, undefined, lifeItemColor, "Maximum life with all modifiers (multiplicative and flat).");
 		addCustom("<hr>", "flat");
 		
 		//total DR - TODO: split in groups? (all, close, distant, affected by dots, fortified etc.)
@@ -436,10 +436,13 @@ function buildCalculator(containerEle, options){
 		addArmorItem("Chest", 1450);
 		addArmorItem("Pants", 850);
 		addArmorPctValue("Helm", 24);
-		addArmorPctValue("Chest", 27);
+		addArmorPctValue("Chest", 28.5);
 		addMaxlifeItem("Helm", 1159);
 		addMaxlifeItem("Ring", 1310);
-		addMaxlifePctValue("Rubies", 20);
+		addMaxlifePctValue("Ruby 4%", 4);
+		addMaxlifePctValue("Ruby 4%", 4);
+		addMaxlifePctValue("Paragon Node 4%", 4);
+		addMaxlifePctValue("Paragon Node 2%", 2);
 		addDrPctValue("DR vs All", 10);
 		addDrPctValue("DR vs Close", 24);
 		addDrPctValue("DR vs Distant", 18, true);
