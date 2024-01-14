@@ -314,6 +314,9 @@ function createStoredCalculatorsPopUp(onSelectCallback){
 		list.className = "list-container";
 		keys.forEach(function(k){
 			var cfg = storedConfigs[k];
+			if (cfg.calc && cfg.calc != d4cType){
+				return;
+			}
 			var loadFun = function(ev){
 				if (onSelectCallback) onSelectCallback(cfg);
 				popUp.popUpClose();
