@@ -54,6 +54,10 @@ URL: https://bytemind-de.github.io/apps/d4/defense.html
 
 - There might be slight rounding errors in the result, because the game often doesn't give you the full values (e.g. Doombringer is actually 41.44% life not 41.4% etc.)
 
+### Credits
+
+- Armor cap calculation is based on [SkyLineOW's findings](https://www.reddit.com/r/Diablo/comments/152gd9u/i_mostly_cracked_the_d4_armor_formula_and_made_a/)
+
 ### Screenshots
 
 <p align="center">
