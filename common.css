@@ -215,9 +215,27 @@ html.dark .button-style {
 	color: #fff;
 	border-color: #D2C8AE;
 }
+button.black, html.dark button.black,
+.button-style.black, html.dark .button-style.black {
+	background: #000;
+	color: #fff;
+}
+button.gold, html.dark button.gold,
+.button-style.gold, html.dark .button-style.gold  {
+	background: #d2c8ae;
+	color: #000;
+}
 button:hover,
 .button-style:hover {
 	box-shadow: inset 0 0 6px 2px #dd0707, 0 0 4px 1px #d2c8ae55;
+}
+button.black:hover,
+.button-style.black:hover {
+	box-shadow: inset 0 0 6px 2px #888, 0 0 4px 1px #d2c8ae55;
+}
+button.gold:hover,
+.button-style.gold:hover {
+	box-shadow: inset 0 0 6px 2px #eee, 0 0 4px 1px #d2c8ae55;
 }
 .button-bold {
 	font-weight: bold;
