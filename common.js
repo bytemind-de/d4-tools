@@ -314,6 +314,7 @@ function createStoredCalculatorsPopUp(onSelectCallback){
 		list.className = "list-container";
 		keys.forEach(function(k){
 			var cfg = storedConfigs[k];
+			//filter calc. type
 			if (cfg.calc && cfg.calc != d4cType){
 				return;
 			}
@@ -409,7 +410,7 @@ function writeConfigToLocalStorage(name, config){
 		if (!name) name = "Unnamed";
 		var key = name.replace(/\s+/g, "_").trim().toLowerCase();
 		key += ("__" + d4cType);
-		storedData.configurations[key] = {name: name, calc: d4cType, data: config};
+		storedData.configurations[key] = {name: name, calc: d4cType, version: d4cVersion, data: config};
 		localStorage.setItem("d4-calc-data", JSON.stringify(storedData));
 	}catch(err){
 		showPopUp("Failed to write to localStorage. Error: " + (err.message || err.name || err));
