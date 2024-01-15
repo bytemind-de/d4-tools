@@ -20,6 +20,10 @@ In addition it supports **critical hit**, **vulnerable** effect and **overpower*
 To compare different variants of your build and test changes you can **open multiple calculators** next to each other and easily **store, load and export the data** (as JSON files).  
   
 URL: https://bytemind-de.github.io/apps/d4/damage.html  
+  
+**Typical questions** to answer with this calculator:
+- _What is the total damage per hit I can expect when using skill A with a fully charged aspect B and overpower + critical hit?_
+- _What is better with my current gear, +50% critical damage or 80 more strength?_
 
 ### Ideas to improve it
 
@@ -34,7 +38,7 @@ URL: https://bytemind-de.github.io/apps/d4/damage.html
 ### Screenshots
 
 <p align="center">
-    <img src="screenshots/d4-damage-calc-s2-1.png" alt="Damage Calculator S2" height="280px"/>
+    <img src="screenshots/d4-damage-calc-s2-1.png" alt="Damage Calculator S2" width="320px"/>
 </p>
 
 
@@ -44,6 +48,10 @@ The D4 Defense Calculator is a tool to evaluate your defense and determine your 
 It will also **calculate your armor required to reach the 85% DR cap** against a specific monster level.  
   
 URL: https://bytemind-de.github.io/apps/d4/defense.html  
+
+**Typical questions** to answer with this calculator:
+- _What is my 'effective' life when defending vs bleeding enemies that do physical damage in close range?_
+- _What is better with my current gear, 4% more life from a ruby or 3% damage reduction from a sapphire?_
 
 ### Ideas to improve it
 
@@ -61,5 +69,5 @@ URL: https://bytemind-de.github.io/apps/d4/defense.html
 ### Screenshots
 
 <p align="center">
-    <img src="screenshots/d4-defense-calc-s2-1.png" alt="Defense Calculator S2 Beta" height="280px"/>
+    <img src="screenshots/d4-defense-calc-s2-1.png" alt="Defense Calculator S2 Beta"  width="320px"/>
 </p>
