@@ -224,6 +224,13 @@ function buildCalculator(containerEle, options){
 		//life
 		var baseLife = data.baseLife;
 		addResult("Base life", baseLife, undefined, lifeItemColorAlt, "Life determined by your character level.", true);
+		var maximumLifeBase = data.maxlifeItems.reduce(function(totalHp, item){
+			if (item.disabled) return totalHp;
+			else {
+				return (totalHp + item.life);
+			}
+		}, baseLife);
+		addResult("Base maximum life", maximumLifeBase, undefined, lifeItemColor, "Life after additional flat life boni.");
 		var maximumLifeMulti = data.maxlifeModifiers.reduce(function(totalHp, item){
 			if (item.disabled) return totalHp;
 			else {
@@ -232,16 +239,10 @@ function buildCalculator(containerEle, options){
 					"Flat contribution of the modifier at this specific point in the calculation (depends on the order).", true);
 				return (totalHp + addLife);
 			}
-		}, baseLife);
-		addResult("Modified life", maximumLifeMulti, undefined, lifeItemColor, "Life after multiplicative modifiers.");
-		var maximumLife = data.maxlifeItems.reduce(function(totalHp, item){
-			if (item.disabled) return totalHp;
-			else {
-				return (totalHp + item.life);
-			}
-		}, maximumLifeMulti);
-		addResult("Maximum life", maximumLife, undefined, lifeItemColor, "Maximum life with all modifiers (multiplicative and flat).");
+		}, maximumLifeBase);
+		addResult("Total maximum life", maximumLifeMulti, undefined, lifeItemColor, "Total life after multiplicative modifiers.");
 		addCustom("<hr>", "flat");
+		var maximumLife = maximumLifeMulti;
 		
 		//total DR - TODO: split in groups? (all, close, distant, affected by dots, fortified etc.)
 		var dmgLeftPct = data.damageReduction.reduce(function(dmgLeft, item){
