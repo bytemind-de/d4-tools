@@ -27,8 +27,9 @@ URL: https://bytemind-de.github.io/apps/d4/damage.html
 
 ### Ideas to improve it
 
-- Implement weapon speed and DPS
+- Implement weapon speed and DPS (UPDATE: beta version for DPS added in v0.12.0)
 - Add predefined properties (skills, passives, glyphs, paragon nodes etc.) for the user to select
+- Add damage groups to automatically switch between close/distant/stunned etc.
 - Read the data from your actual account via some Blizzard API (d4armory seems to be able to do it, but how???)
 
 ### Known bugs / quirks
