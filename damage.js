@@ -17,6 +17,7 @@ function buildCalculator(containerEle, options){
 	};
 
 	var baseDamageEle = containerEle.querySelector("[name=base-damage]");
+	var attackSpeedEle = containerEle.querySelector("[name=attack-speed]");
 	var skillDamageEle = containerEle.querySelector("[name=skill-damage]");
 	var mainStatEle = containerEle.querySelector("[name=main-stat]");
 	var baseLifeEle = containerEle.querySelector("[name=char-base-life]");
@@ -163,6 +164,7 @@ function buildCalculator(containerEle, options){
 		
 		var totalDamage = 0;
 		var baseDamage = baseDamageEle.value || 0;
+		var attackSpeed = attackSpeedEle.value || 1.0;
 		var hasModifier = doCalcVulnerable.checked || doCalcCrit.checked || doCalcOverpower.checked;
 		
 		var skillDamageFactor = (skillDamageEle.value || 0.0) / 100;
@@ -281,12 +283,14 @@ function buildCalculator(containerEle, options){
 			addCustom("<hr>", "flat");
 		}
 		
+		var timeAvgDamageBase = totalDamage;
 		if (doCalcVulnerable.checked){
 			//var vulnerableDamageAdditiveAsFactor = 1.0 + ((vulnerableDamageAddEle.value || 0.0) / addModFactor) / 100;	//it is in add. pool now
 			var vulnerableDamageFactor = (1.0 + (vulnerableDamageEle.value || 0.0) / 100);
 			let vulnerableBaseDamage = baseDamage * skillDamageFactor * mainStatFactor * (addModFactor + addModFactorVulnerable)
 				* multiModFactor * vulnerableDamageFactor;
 			totalDamage *= vulnerableDamageFactor;
+			timeAvgDamageBase *= vulnerableDamageFactor;
 			addResult("Base dmg. to vulnerable enemy", vulnerableBaseDamage, vulnerableDamageFactor, vulnerableColor,
 				"Base damage done to vulnerable enemies (no crit, no overpower) including previous modifiers.");
 			addCustom("<hr>", "flat");
@@ -304,6 +308,7 @@ function buildCalculator(containerEle, options){
 			//var averageHitDamageFactoringCritChance = critChanceFactor * critBaseDamage;
 			var averageHitDamageFactoringCritChance = (1.0 - critChancePct/100) * previousBaseDamage + (critChancePct/100 * critBaseDamage);
 			var critChanceFactor = averageHitDamageFactoringCritChance / previousBaseDamage;
+			timeAvgDamageBase *= critChanceFactor;
 			addResult("Avg. base dmg. with crit chance", averageHitDamageFactoringCritChance, critChanceFactor, critColor,
 				"Average damage of a critical hit (no vulnerable, no overpower), factoring in the critical hit chance, e.g. 30% crit chance means (70% base damage + 30% crit damge).");
 			addCustom("<hr>", "flat");
@@ -313,6 +318,7 @@ function buildCalculator(containerEle, options){
 			let overpowerBaseDamage = baseDamage * skillDamageFactor * mainStatFactor * (addModFactor + addModFactorOverpower)
 				* multiModFactor * overpowerDamageFactor;
 			totalDamage *= overpowerDamageFactor;
+			timeAvgDamageBase *= overpowerDamageFactor;
 			addResult("Base dmg. with overpower", overpowerBaseDamage, overpowerDamageFactor, overpowerColor,
 				"Base damage done with overpower hits without modifiers like crit. or vulnerable.");
 			addCustom("<hr>", "flat");
@@ -325,7 +331,7 @@ function buildCalculator(containerEle, options){
 				"Total max. damage per hit with the given modifiers");
 		}
 		addCustom("<hr>", "flat");
-		
+				
 		var reductionModPcts = getReductionModPcts();
 		var reductionModFactor = 1.0;
 		if (reductionModPcts.length){
@@ -336,7 +342,14 @@ function buildCalculator(containerEle, options){
 					"Max. damage after this and all previous reduction factors have been applied.");
 			});
 			totalDamage *= reductionModFactor;	//baseDamage * skillDamageFactor * mainStatFactor * addModFactorMax * multiModFactor ...
+			timeAvgDamageBase *= reductionModFactor;
+			addCustom("<hr>", "flat");
 		}
+		
+		addResult("Expected damage per hit", totalDamage, undefined, undefined, "Final result for single hit damage to monsters based on your average weapon damage.\n" 
+			+ "Note: Your in-game numbers can be around 25-30% lower/higher, depending on your min/max damage roll for weapon and skill at cast.");
+		addResult("Average damage per second (DPS)", timeAvgDamageBase * attackSpeed, undefined, undefined, "Average damage per second, " 
+			+ "if you cast the skill as fast as possible over a few seconds without resource issues.");
 	}
 	
 	function getData(){
@@ -468,10 +481,13 @@ function buildCalculator(containerEle, options){
 	}
 	//Add some DEMO values?
 	if (options?.addDemoContent){
-		addAdditiveMod("Damage vs Elites", 15);
-		addAdditiveMod("Damage vs Healthy", 90);
-		addMultiplierMod("Enemies take more damage", 12);
-		addReductionMod("Global damage reduction", 66);
+		addAdditiveMod("Example: Damage vs Distant", 30);
+		addAdditiveMod("Example: Damage on Monday", 69);
+		addMultiplierMod("Example: Glass Cannon", 18);
+		addMultiplierMod("Example: Tibaults Will", 40);
+		addReductionMod("Global damage reduction", 75);
+	}else{
+		addReductionMod("Global damage reduction", 75);
 	}
 	//Show/hide footer?
 	if (!options?.showFooter){

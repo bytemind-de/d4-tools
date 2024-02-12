@@ -254,6 +254,12 @@ button + .button-style,
 .has-info {
 	cursor: help;
 }
+.heading {
+	text-decoration: underline;
+}
+.emphasize {
+	/*font-weight: bold;*/
+}
 
 .content-box {
 	padding: 0;

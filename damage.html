@@ -33,7 +33,7 @@
 	
 	<script>
 		var d4cType = "dmgcalc";	//TODO: this is added to the storage key and can in theory be in conflict with calc name
-		var d4cVersion = "0.11.0";
+		var d4cVersion = "0.12.0";
 		var d4season = "3";
 	</script>
 </head>
@@ -110,49 +110,53 @@
 					</div>
 					<div class="section">
 						<div class="group calc-item" title="Damage of your weapon used to cast the skill, taken from character stats menu.">
-							<label class="has-info">Primary weapon damage:</label>
+							<label class="emphasize has-info">Primary weapon damage:</label>
 							<input name="base-damage" class="highlight border-col-base" type="number" value="100">
+						</div>
+						<div class="group calc-item" title="Attack speed found in your character stats menu (includes weapon speed and boni).">
+							<label class="emphasize has-info">Total attack speed:</label>
+							<input name="attack-speed" class="highlight border-col-base" type="number" value="1.0">
 						</div>
 					</div>
 					<div class="section">
 						<div class="group calc-item" title="Skill damage taken from skill tree description.">
-							<label class="has-info">Skill damage modifier (%):</label>
+							<label class="emphasize has-info">Skill damage modifier (%):</label>
 							<input name="skill-damage" class="highlight border-col-base" type="number" value="50">
 						</div>
 					</div>
 					<div class="section">
 						<div class="group calc-item" title="Your character's primary stat (strength, dexterity, ...).">
-							<label class="has-info">Main stat (str, int, dex, wil):</label>
+							<label class="emphasize has-info">Main stat (str, int, dex, wil):</label>
 							<input name="main-stat" class="highlight" type="number" value="100">
 						</div>
 						<div class="group calc-item" title="Base and maximum life. Used for example to calculate overpower damage.">
 							<div style="margin-right: 16px;">
 								<label class="has-info">Base life:</label>
-								<input name="char-base-life" class="highlight" type="number" value="100">
+								<input name="char-base-life" class="highlight" type="number" value="1000">
 							</div>
 							<div>
 								<label class="has-info">Max. life:</label>
-								<input name="char-max-life" class="highlight" type="number" value="150">
+								<input name="char-max-life" class="highlight" type="number" value="1500">
 							</div>
 						</div>
 					</div>
 					<div class="section">
-						<div class="group calc-item" title="The damage multiplier for vulnerable. If your gear has [x%] modifiers its recommended to add them in the global section below.">
-							<label class="has-info">Damage to vulnerable ([x]%):</label>
+						<div class="group calc-item" title="The fixed damage multiplier for vulnerable. If your gear has [x%] modifiers its recommended to add them in the global section below.">
+							<label class="has-info">Damage to vulnerable (fixed [x]%):</label>
 							<input name="vulnerable-damage" class="highlight border-col-vul" type="number" value="20">
 						</div>
 						<div class="group calc-item" title="Additive damage gained from 'vulnerable damage' stats on items, paragon board etc.">
-							<label class="has-info">Additive damage ([+]%):</label>
+							<label class="emphasize has-info">Additive damage ([+]%):</label>
 							<input name="vulnerable-damage-add" class="highlight border-col-vul" type="number" value="0">
 						</div>
 					</div>
 					<div class="section">
-						<div class="group calc-item" title="The base multiplier for overpower damage. If your gear has [x%] modifiers its recommended to add them in the global section below.">
-							<label class="has-info">Overpower damage ([x]%):</label>
+						<div class="group calc-item" title="The fixed base multiplier for overpower damage. If your gear has [x%] modifiers its recommended to add them in the global section below.">
+							<label class="has-info">Overpower damage (fixed [x]%):</label>
 							<input name="overpower-damage" class="highlight border-col-overp" type="number" value="50">
 						</div>
 						<div class="group calc-item" title="Additive damage gained from 'overpower damage' stats on items, paragon board etc.">
-							<label class="has-info">Additive damage ([+]%):</label>
+							<label class="emphasize has-info">Additive damage ([+]%):</label>
 							<input name="overpower-damage-add" class="highlight border-col-overp" type="number" value="0">
 						</div>
 						<div class="group calc-item" title="Does the character have the ability to fortify?">
@@ -160,24 +164,24 @@
 						</div>
 					</div>
 					<div class="section">
-						<div class="group calc-item" title="The damage multiplier for crit. damage. If your gear has [x%] modifiers its recommended to add them in the global section below.">
-							<label class="has-info">Critical hit damage ([x]%):</label>
+						<div class="group calc-item" title="The fixed damage multiplier for crit. damage. If your gear has [x%] modifiers its recommended to add them in the global section below.">
+							<label class="has-info">Critical strike damage (fixed [x]%):</label>
 							<input name="critical-damage" class="highlight border-col-crit" type="number" value="50">
 						</div>
 						<div class="group calc-item" title="Additive damage gained from 'critical damage' stats on items, paragon board etc.">
-							<label class="has-info">Additive damage ([+]%):</label>
+							<label class="emphasize has-info">Additive damage ([+]%):</label>
 							<input name="critical-damage-add" class="highlight border-col-crit" type="number" value="0">
 						</div>
-						<div class="group calc-item" title="Critical hit chance. Used for example below to calculate an average damage per hit.">
-							<label class="has-info">Critical hit chance (%):</label>
+						<div class="group calc-item" title="Critical strike chance. Used for example below to calculate an average damage per hit.">
+							<label class="emphasize has-info">Critical strike chance (%):</label>
 							<input name="critical-hit-chance" class="highlight border-col-crit" type="number" value="5">
 						</div>
 					</div>
 				</div>
 				<div class="section-group">
 					<div class="section">
-						<p class="has-info" title="Modifiers include 'Damage to Healthy, Damage with Physical, Damage with Lightning, Damage to Bleeding, etc. ..."
-							>Additive modifiers ([+]% damage to ...):</p>
+						<p class="heading has-info" title="Modifiers include 'Damage to Healthy, Damage with Physical, Damage with Lightning, Damage to Bleeding, etc. ..."
+							>Additive damage ([+]% damage to ...):</p>
 						<div name="add-modifiers-container" class="modifiers-container"></div>
 						<div class="group right">
 							<button class="button-bold" name="add-modifier-btn" title="Add new modifier">+</button>
@@ -186,8 +190,8 @@
 				</div>
 				<div class="section-group">
 					<div class="section">
-						<p class="has-info" title="Multipliers gained from skills, synergies, unique items, aspects, etc."
-							>Other global multipliers ([×]%):</p>
+						<p class="heading has-info" title="Multipliers gained from skills, synergies, unique items, aspects, etc."
+							>Damage multipliers ([×]%):</p>
 						<div name="multi-modifiers-container" class="modifiers-container"></div>
 						<div class="group right">
 							<button class="button-bold" name="multi-modifier-btn" title="Add new modifier">+</button>
@@ -196,7 +200,7 @@
 				</div>
 				<div class="section-group">
 					<div class="section">
-						<p class="has-info" title="Any other multipliers that reduce your damage like monster armor, resistances, etc."
+						<p class="heading has-info" title="Any other multipliers that reduce your damage like monster armor, resistances, etc."
 							>Enemy damage reduction ([×]%):</p>
 						<div name="reduction-modifiers-container" class="modifiers-container"></div>
 						<div class="group right">
