@@ -356,6 +356,7 @@ function buildCalculator(containerEle, options){
 		var data = {
 			calculatorName: getTitle(),
 			baseDamage: +baseDamageEle.value,
+			attackSpeed: +attackSpeedEle.value,
 			skillDamage: +skillDamageEle.value,
 			mainStat: +mainStatEle.value,
 			baseLife: +baseLifeEle.value,
@@ -377,6 +378,7 @@ function buildCalculator(containerEle, options){
 	function restoreData(data, calculatorName){
 		resultContainer.innerHTML = "";
 		baseDamageEle.value = data.baseDamage || 100;
+		attackSpeedEle.value = data.attackSpeed || 1.0;
 		skillDamageEle.value = data.skillDamage || 50;
 		mainStatEle.value = data.mainStat || 100;
 		baseLifeEle.value = data.baseLife || 100;
