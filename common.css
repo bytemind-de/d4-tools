@@ -455,6 +455,37 @@ html.dark input.highlight {
 .group.calc-item.hidden {
 	opacity: 0.33;
 }
+.group .type-box {
+	min-width: 8px;
+	min-height: 23px;
+	max-height: 25px;
+	margin: 0 4px;
+	cursor: pointer;
+	display: flex;
+	flex-direction: column;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: center;
+}
+/*html.dark .group .type-box {}*/
+.group .type-box.bigger {
+	min-width: 16px;
+}
+.group .type-box .type-element {
+	width: 6px;
+	height: 6px;
+	background: currentColor;
+	border-radius: 50%;
+	margin: 1px;
+}
+.group .type-box .type-element.empty {
+	background: transparent;
+	border: 1px solid #ccc;
+}
+html.dark .group .type-box .type-element.empty {
+	border: 1px solid #444;
+}
+
 .color-base {
 	color: #666;
 }
@@ -466,6 +497,9 @@ html.dark input.highlight {
 }
 .color-overpower {
 	color: #00deed;
+}
+.color-op-crit {
+	color: #ff890c;
 }
 .color-add-mod {
 	color: #009688;
@@ -578,11 +612,21 @@ html.dark .pop-up-message-box {
 	flex-direction: column;
 	justify-content: start;
 }
+.pop-up-message-box form > .form-section.row {
+	flex-direction: row;
+	align-items: center;
+}
 .pop-up-message-box form > * {
 	margin: 4px 0;
 }
 .pop-up-message-box form > .form-section > * {
 	margin: 4px 0;
+}
+.pop-up-message-box form > .form-section.row label {
+	flex-grow: 1;
+}
+.pop-up-message-box form > .form-section.row input[type="checkbox"] {
+	margin: 0 8px;
 }
 .list-container {
 	display: flex;
@@ -621,4 +665,12 @@ html.dark .list-container .list-item.button-style:hover {
 .list-container .list-item > button:hover {
 	background: #e2d8be;
 	box-shadow: unset;
+}
+
+.graph {
+	border: 1px solid currentColor;
+	width: 512px;
+	max-width: 100%;
+	height: 384px;
+	max-height: 100%;
 }

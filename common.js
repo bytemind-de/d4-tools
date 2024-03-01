@@ -19,6 +19,46 @@ function updateUrlParameter(key, value, reloadPage){
 	}
 }
 
+function loadScript(url) {
+	return new Promise((resolve, reject) => {
+		const script = document.createElement('script');
+		script.src = url;
+		script.onload = resolve;
+		script.onerror = reject;
+		document.head.appendChild(script);
+	});
+}
+async function loadScripts(urls) {
+	for (const url of urls) {
+		await loadScript(url);
+	}
+}
+function loadCSS(url) {
+	const link = document.createElement('link');
+	link.rel = 'stylesheet';
+	link.href = url;
+	document.head.appendChild(link);
+}
+var isVisLibLoaded = false;
+function loadVisLib(finishedCallback, errorCallback){
+	if (isVisLibLoaded) finishedCallback();
+	else {
+		isVisLibLoaded = true;
+		loadCSS("visualization/uPlot.min.css");
+		loadScripts([
+			"visualization/uPlot.iife.min.js",
+			"visualization/uPlot-lazy.min.js",
+			"visualization/uPlot-lazy-histogram.min.js"
+			//visualization/uPlot-lazy-heatmap.min.js
+		]).then(function(){
+			finishedCallback();
+		}).catch(function(err){
+			if (errorCallback) errorCallback();
+			else showPopUp("Failed to load visualization library!");
+		});
+	}
+}
+
 //Common UI:
 
 var mainView = document.body.querySelector(".main-view");
@@ -120,6 +160,9 @@ function showPopUp(content, buttons, options){
 	popUpOverlay.className = "pop-up-overlay";
 	var popUpBox = document.createElement("div");
 	popUpBox.className = "pop-up-message-box";
+	if (options?.width){
+		popUpBox.style.width = options.width;
+	}
 	var popUpCloseBtn = document.createElement("button");
 	popUpCloseBtn.className = "pop-up-message-box-close";
 	//popUpCloseBtn.innerHTML = "<span>×</span>";
@@ -133,10 +176,13 @@ function showPopUp(content, buttons, options){
 		contentDiv.appendChild(content);
 	}
 	//close function
+	var isClosed = false;
 	popUpOverlay.popUpClose = function(){
+		if (isClosed) return;
 		mainView.inert = false;	//release main
 		document.body.classList.remove("disable-interaction");
 		popUpOverlay.remove();
+		isClosed = true;
 	}
 	popUpCloseBtn.addEventListener("click", function(ev){
 		popUpOverlay.popUpClose();
@@ -162,11 +208,21 @@ function showFormPopUp(formFields, onSubmit){
 			let ele = document.createElement("label");
 			ele.textContent = field.label;
 			formSection.appendChild(ele);
+		}else if (field.spacer){
+			let ele = document.createElement("div");
+			formSection.appendChild(ele);
 		}
-		if (field.input){
+		if (field.input || field.checkbox){
 			let ele = document.createElement("input");
-			if (field.pattern){
-				ele.pattern = field.pattern;
+			if (field.input){
+				if (field.pattern){
+					ele.pattern = field.pattern;
+				}
+				ele.value = field.value;
+			}else if (field.checkbox){
+				ele.type = "checkbox";
+				formSection.classList.add("row");
+				ele.checked = field.value;
 			}
 			if (field.required){
 				ele.required = true;
@@ -175,7 +231,6 @@ function showFormPopUp(formFields, onSubmit){
 				ele.title = field.title;
 			}
 			ele.name = field.name || ("field" + i);
-			ele.value = field.value;
 			formSection.appendChild(ele);
 		}
 		if (field.submit){
@@ -195,8 +250,85 @@ function showFormPopUp(formFields, onSubmit){
 	});
 	var popUp = showPopUp(form, [], {easyClose: false});
 }
+function showDataGraph(dataPoints, title){
+	//prep. visualization
+	var c = document.createElement("div");
+	c.innerHTML = "Loading ...";
+	var popup = showPopUp(c, [], {
+		width: "auto"
+	});
+	loadVisLib(function(){
+		var minDamage = Math.min(...dataPoints);
+		var maxDamage = Math.max(...dataPoints);
+		var avg1 = getAverage(dataPoints);
+		var histResolution = 25;
+		var hist = makeHistogram(dataPoints, minDamage, maxDamage, histResolution);
+		var delta = hist[0][1] - hist[0][0];
+		//console.error("hist", hist);	//DEBUG
+		var g = document.createElement("div");
+		g.className = "graph";
+		c.innerHTML = "";
+		c.appendChild(g);
+		var plot = plotBarChart(g, minDamage - delta, maxDamage + delta, hist, title || "Histogram");
+		const resizeObserver = new ResizeObserver((entries) => {
+			//some (overly complicated) auto-scaling for the graph
+			var popupOverlayRect = popup.getBoundingClientRect();
+			var maxW = popupOverlayRect.width * 0.9 - 34;
+			var maxH = popupOverlayRect.height - 78;
+			var isLandscape = (maxW > maxH);
+			if (!isLandscape) maxH = maxW;
+			if (maxW > 640 && isLandscape){
+				maxW = 640;
+				maxH = (maxH > 512)? 512 : maxH;
+			}
+			g.style.width = maxW + "px";
+			g.style.height = maxH + "px";
+			uPlot.lazy.resizePlot(plot);
+		});
+		resizeObserver.observe(popup);
+	}, function(){
+		c.innerHTML = "ERROR - Failed to load visualization!";
+	});
+}
+function getAverage(arr){
+	var sum = arr.reduce((a, b) => a + b, 0);
+	var avg = (sum / arr.length) || 0;
+	return avg;
+}
+function makeHistogram(data, start, end, n){
+	var hist = uPlot.lazy.histogram({
+		data: data,
+		//custom array or object:
+		bins: {
+			start: start, 
+			end: end, 
+			n: n
+		}
+	});
+	return [hist.x, hist.y];
+}
+function plotBarChart(graphEle, xStart, xEnd, data, title){
+	uPlot.lazy.chartBackground = "#000";
+	uPlot.lazy.chartTextColor = "#D2C8AE";
+	return uPlot.lazy.plot({
+		targetElement: graphEle,
+		title: title,
+		drawType: "bars",
+		stroke: "#a50905", //"#D2C8AE", //"#E24D42",
+		strokeWidth: 1,
+		fill: "#a50905AA", //"#E24D42AA",
+		xRange: [xStart, xEnd],
+		showPoints: false,
+		showLegend: true,
+		xLabel: "damage",
+		yLabel: "count",
+		//labelTransform: [function(u, xv, space){ return xv.map(t => t + "s"); }],
+		//legendTransform: [function(u, t){ return (t + "s"); }],
+		data: data
+	});
+}
 
-function addDynamicMod(parentEle, modName, className, value, disabled, stepSize){
+function addDynamicMod(parentEle, modName, className, value, disabled, stepSize, selectableTypes, preselectedTypes){
 	var newAddMod = document.createElement("div");
 	newAddMod.className = "group limit-label calc-item";
 	if (disabled){
@@ -206,6 +338,7 @@ function addDynamicMod(parentEle, modName, className, value, disabled, stepSize)
 	var newAddModLabel = document.createElement("label");
 	var newAddModLabelSpan = document.createElement("span");
 	newAddModLabel.appendChild(newAddModLabelSpan);
+	newAddModLabelSpan.style.cursor = "pointer";
 	newAddModLabelSpan.textContent = modName + ":";
 	newAddModLabelSpan.addEventListener("click", function(){
 		showFormPopUp([
@@ -243,12 +376,76 @@ function addDynamicMod(parentEle, modName, className, value, disabled, stepSize)
 			newAddMod.classList.add("hidden");
 		}
 	});
+	var typeBoxEle;
+	var selectedTypes = preselectedTypes || [];
+	if (selectableTypes){
+		newAddModInput.dataset.selectedTypes = JSON.stringify(selectedTypes);
+		typeBoxEle = document.createElement("div");
+		typeBoxEle.className = "type-box";
+		typeBoxEle.title = "Select one or more required 'types' for this item to in-/exclude it in certain calculations. No 'type' means it applies to all calculations.";
+		//restore?
+		addSelectableTypes(typeBoxEle, selectableTypes, selectedTypes);
+		//type select UI
+		typeBoxEle.addEventListener("click", function(){
+			//create options
+			var options = [{
+				label: typeBoxEle.title
+			}];
+			selectableTypes.forEach(function(itm){
+				options.push({
+					checkbox: true, label: itm.name, name: itm.value,
+					value: (selectedTypes.indexOf(itm.value) >= 0),
+					title: "Select this value to assign the item the type '" + itm.value + "'."
+				});
+			});
+			options.push({spacer: true}, {submit: true, name: "Ok"});
+			//show popup
+			showFormPopUp(options, function(formData){
+				var newTypeSet = [];
+				selectableTypes.forEach(function(itm){
+					var newType = !!formData.get(itm.value);
+					if (newType){
+						newTypeSet.push(itm.value);
+					}
+				});
+				//add elements
+				addSelectableTypes(typeBoxEle, selectableTypes, newTypeSet);
+				//set state
+				newAddModInput.dataset.selectedTypes = JSON.stringify(newTypeSet);
+				selectedTypes = newTypeSet;
+			});
+		});
+	}
 	newAddMod.appendChild(newAddModLabel);
+	if (typeBoxEle) newAddMod.appendChild(typeBoxEle);
 	newAddMod.appendChild(newAddModInput);
 	newAddMod.appendChild(newAddModHide);
 	newAddMod.appendChild(newAddModRemove);
 	parentEle.appendChild(newAddMod);
 	bytemind.dragdrop.addMoveHandler(newAddMod, parentEle, newAddModLabel);
+}
+function addSelectableTypes(typeBoxEle, selectableTypes, newTypeSet){
+	typeBoxEle.innerHTML = "";		//clean up
+	typeBoxEle.classList.remove("bigger");
+	if (!newTypeSet.length){
+		//add one empty indicator
+		let typeEle = document.createElement("div");
+		typeEle.className = "type-element empty";
+		typeBoxEle.appendChild(typeEle);
+		return;
+	}
+	selectableTypes.forEach(function(itm){
+		if (newTypeSet.indexOf(itm.value) >= 0){
+			let typeEle = document.createElement("div");
+			typeEle.className = "type-element";
+			if (itm.className) typeEle.classList.add(itm.className);
+			if (itm.color) typeEle.style.background = itm.color;
+			typeBoxEle.appendChild(typeEle);
+		}
+	});
+	if (newTypeSet.length > 3){
+		typeBoxEle.classList.add("bigger");
+	}
 }
 
 //Store/load/delete/export etc.:
