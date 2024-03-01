@@ -69,30 +69,30 @@ function buildCalculator(containerEle, options){
 		return currentConfigName;
 	}
 	
-	function addArmorItem(newName, startValue, isDisabled){
+	function addArmorItem(newName, startValue, isDisabled, selectedTypes){
 		var modName = newName || prompt("Enter a name for this value:");
 		if (!modName) return;
-		addDynamicMod(armorItemsContainer, modName, "border-col-armor", startValue, isDisabled);
+		addDynamicMod(armorItemsContainer, modName, "border-col-armor", startValue, isDisabled, 1.0, undefined, selectedTypes);
 	}
-	function addArmorPctValue(newName, startValue, isDisabled){
+	function addArmorPctValue(newName, startValue, isDisabled, selectedTypes){
 		var modName = newName || prompt("Enter a name for this '%' modifier:");
 		if (!modName) return;
-		addDynamicMod(armorPctContainer, modName, "border-col-armor", startValue, isDisabled, 0.1);
+		addDynamicMod(armorPctContainer, modName, "border-col-armor", startValue, isDisabled, 0.1, undefined, selectedTypes);
 	}
-	function addMaxlifeItem(newName, startValue, isDisabled){
+	function addMaxlifeItem(newName, startValue, isDisabled, selectedTypes){
 		var modName = newName || prompt("Enter a name for this value:");
 		if (!modName) return;
-		addDynamicMod(maxlifeItemsContainer, modName, "border-col-life", startValue, isDisabled);
+		addDynamicMod(maxlifeItemsContainer, modName, "border-col-life", startValue, isDisabled, 1.0, undefined, selectedTypes);
 	}
-	function addMaxlifePctValue(newName, startValue, isDisabled){
+	function addMaxlifePctValue(newName, startValue, isDisabled, selectedTypes){
 		var modName = newName || prompt("Enter a name for this '%' modifier:");
 		if (!modName) return;
-		addDynamicMod(maxlifePctContainer, modName, "border-col-life", startValue, isDisabled, 0.1);
+		addDynamicMod(maxlifePctContainer, modName, "border-col-life", startValue, isDisabled, 0.1, undefined, selectedTypes);
 	}
-	function addDrPctValue(newName, startValue, isDisabled){
+	function addDrPctValue(newName, startValue, isDisabled, selectedTypes){
 		var modName = newName || prompt("Enter a name for this damage reduction modifier:");
 		if (!modName) return;
-		addDynamicMod(drValuesContainer, modName, "reduction-mod-val", startValue, isDisabled, 0.1);
+		addDynamicMod(drValuesContainer, modName, "reduction-mod-val", startValue, isDisabled, 0.1, undefined, selectedTypes);
 	}
 	
 	function getArmorItems(includeHidden){
@@ -102,7 +102,8 @@ function buildCalculator(containerEle, options){
 				items.push({
 					armor: +ele.value,
 					info: ele.parentElement.dataset.info,
-					disabled: ele.parentElement.classList.contains("hidden")
+					disabled: ele.parentElement.classList.contains("hidden"),
+					types: JSON.parse(ele.dataset?.selectedTypes || "[]")
 				});
 			}
 		});
@@ -115,7 +116,8 @@ function buildCalculator(containerEle, options){
 				factors.push({
 					pct: +ele.value,
 					info: ele.parentElement.dataset.info,
-					disabled: ele.parentElement.classList.contains("hidden")
+					disabled: ele.parentElement.classList.contains("hidden"),
+					types: JSON.parse(ele.dataset?.selectedTypes || "[]")
 				});
 			}
 		});
@@ -128,7 +130,8 @@ function buildCalculator(containerEle, options){
 				items.push({
 					life: +ele.value,
 					info: ele.parentElement.dataset.info,
-					disabled: ele.parentElement.classList.contains("hidden")
+					disabled: ele.parentElement.classList.contains("hidden"),
+					types: JSON.parse(ele.dataset?.selectedTypes || "[]")
 				});
 			}
 		});
@@ -141,7 +144,8 @@ function buildCalculator(containerEle, options){
 				factors.push({
 					pct: +ele.value,
 					info: ele.parentElement.dataset.info,
-					disabled: ele.parentElement.classList.contains("hidden")
+					disabled: ele.parentElement.classList.contains("hidden"),
+					types: JSON.parse(ele.dataset?.selectedTypes || "[]")
 				});
 			}
 		});
@@ -155,14 +159,15 @@ function buildCalculator(containerEle, options){
 					pct: +ele.value,
 					info: ele.parentElement.dataset.info,
 					group: ele.parentElement.dataset.group,
-					disabled: ele.parentElement.classList.contains("hidden")
+					disabled: ele.parentElement.classList.contains("hidden"),
+					types: JSON.parse(ele.dataset?.selectedTypes || "[]")
 				});
 			}
 		});
 		return factors;
 	}
 	
-	function addResult(info, val, modFactor, colorClass, tooltip, isDetail){
+	function addResult(info, val, modFactor, colorClass, tooltip, isDetail, enableTooltipPopup){
 		if (!colorClass) colorClass = "";
 		var grp = document.createElement("div");
 		grp.className = "group flat limit-label-2";
@@ -177,6 +182,11 @@ function buildCalculator(containerEle, options){
 		);
 		if (tooltip){
 			grp.title = tooltip;
+		}
+		if (tooltip && enableTooltipPopup){
+			//grp.classList.add("has-info");
+			grp.firstChild.classList.add("has-info");
+			grp.firstChild.addEventListener("click", () => { showPopUp(tooltip); });
 		}
 		resultContainer.appendChild(grp);
 	}
@@ -331,31 +341,31 @@ function buildCalculator(containerEle, options){
 		armorItemsContainer.innerHTML = "";
 		if (data.armorItems?.length){
 			data.armorItems.forEach(function(itm){
-				addArmorItem(itm.info, itm.armor, itm.disabled);
+				addArmorItem(itm.info, itm.armor, itm.disabled, itm.types);
 			});
 		}
 		armorPctContainer.innerHTML = "";
 		if (data.armorModifiers?.length){
 			data.armorModifiers.forEach(function(itm){
-				addArmorPctValue(itm.info, itm.pct, itm.disabled);
+				addArmorPctValue(itm.info, itm.pct, itm.disabled, itm.types);
 			});
 		}
 		maxlifeItemsContainer.innerHTML = "";
 		if (data.maxlifeItems?.length){
 			data.maxlifeItems.forEach(function(itm){
-				addMaxlifeItem(itm.info, itm.life, itm.disabled);
+				addMaxlifeItem(itm.info, itm.life, itm.disabled, itm.types);
 			});
 		}
 		maxlifePctContainer.innerHTML = "";
 		if (data.maxlifeModifiers?.length){
 			data.maxlifeModifiers.forEach(function(itm){
-				addMaxlifePctValue(itm.info, itm.pct, itm.disabled);
+				addMaxlifePctValue(itm.info, itm.pct, itm.disabled, itm.types);
 			});
 		}
 		drValuesContainer.innerHTML = "";
 		if (data.damageReduction?.length){
 			data.damageReduction.forEach(function(itm){
-				addDrPctValue(itm.info, itm.pct, itm.disabled);
+				addDrPctValue(itm.info, itm.pct, itm.disabled, itm.types);
 			});
 		}
 		setTitle(calculatorName || data.calculatorName || "Unnamed Calculator");
@@ -468,6 +478,17 @@ function addNewContentBox(){
 	c.className = "content-box calculator-instance";
 	c.innerHTML = calculatorTemplate;
 	contentPage.appendChild(c);
+	
+	//automatically add info pop-ups
+	c.querySelectorAll(".has-info").forEach(function(ele){
+		ele.addEventListener("click", function(){
+			var text = ele.title || ele.parentElement?.title || ele.parentElement?.parentElement?.title;
+			if (text){
+				showPopUp(text);
+			}
+		});
+	});
+	
 	return c;
 }
 function addNewCalculator(addDemoContent, showFooter){
