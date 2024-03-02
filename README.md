@@ -41,7 +41,7 @@ URL: https://bytemind-de.github.io/apps/d4/damage.html
 
 <p align="center">
     <img src="screenshots/d4-damage-calc-s3-1.png" alt="Damage Calculator S2" width="320px"/>
-	<img src="screenshots/d4-damage-calc-s3-2.png" alt="Damage Calculator S2" width="320px"/>
+	<img src="screenshots/d4-damage-calc-s3-2.png" alt="Damage Calculator S2" width="316px"/>
 </p>
 
 
