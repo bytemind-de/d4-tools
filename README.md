@@ -24,6 +24,7 @@ URL: https://bytemind-de.github.io/apps/d4/damage.html
 **Typical questions** to answer with this calculator:
 - _What is the total damage per hit I can expect when using skill A with a fully charged aspect B and overpower + critical hit?_
 - _What is better with my current gear, +50% critical damage or 80 more strength?_
+- _What is the average DPS when I switch from 2h to 1h weapon?_
 
 ### Ideas to improve it
 
@@ -34,7 +35,7 @@ URL: https://bytemind-de.github.io/apps/d4/damage.html
 
 ### Known bugs / quirks
 
-- To get correct values we need to apply an approx. 66% global damage reduction for monsters. This value seems to be independent of world tier, but I haven't really tested it with low-level characters.
+- Stored data will be lost anytime the browser cleans up its local-storage, so make sure to export your data often!
 
 ### Screenshots
 
@@ -62,6 +63,7 @@ URL: https://bytemind-de.github.io/apps/d4/defense.html
 ### Known bugs / quirks
 
 - There might be slight rounding errors in the result, because the game often doesn't give you the full values (e.g. Doombringer is actually 41.44% life not 41.4% etc.)
+- Stored data will be lost anytime the browser cleans up its local-storage, so make sure to export your data often!
 
 ### Credits
 
