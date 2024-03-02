@@ -308,22 +308,33 @@ function makeHistogram(data, start, end, n){
 	return [hist.x, hist.y];
 }
 function plotBarChart(graphEle, xStart, xEnd, data, title){
-	uPlot.lazy.chartBackground = "#000";
-	uPlot.lazy.chartTextColor = "#D2C8AE";
+	var isDark = document.documentElement.classList.contains("dark");
+	uPlot.lazy.chartBackground = isDark? "#000" : "#fff";
+	uPlot.lazy.chartTextColor = isDark? "#D2C8AE" : "#000";
+	var fontSize = 12;
+	if (xEnd > 999999) fontSize = 10;
+	else if (xEnd > 9999) fontSize = 11;
 	return uPlot.lazy.plot({
 		targetElement: graphEle,
 		title: title,
 		drawType: "bars",
-		stroke: "#a50905", //"#D2C8AE", //"#E24D42",
+		stroke: isDark? "#a50905" : "#4F0100", //"#D2C8AE", //"#E24D42",
 		strokeWidth: 1,
-		fill: "#a50905AA", //"#E24D42AA",
+		fill: isDark? "#a50905AA" : "#a50905FF", //"#E24D42AA",
 		xRange: [xStart, xEnd],
 		showPoints: false,
 		showLegend: true,
 		xLabel: "damage",
 		yLabel: "count",
+		axisStroke: isDark? "#D2C8AE" : "#000",	//"#c7d0d9"
+		axisGridStroke: isDark? "#3A3830" : "#ccc", //"#2c3235",
+		axisFont: (fontSize + "px sans-serif"),
 		//labelTransform: [function(u, xv, space){ return xv.map(t => t + "s"); }],
 		//legendTransform: [function(u, t){ return (t + "s"); }],
+		legendTransform: [function(u, t){
+			if (t > 999.9) return Number(t).toLocaleString(undefined, {maximumFractionDigits: 0});
+			else return Number(t).toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 1});
+		}],
 		data: data
 	});
 }
