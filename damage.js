@@ -409,7 +409,8 @@ function buildCalculator(containerEle, options){
 			let onlyOverpowerChance = (1.0 - critChance) * overpowerChanceRaw;
 			let critOpChance = critChance * overpowerChanceRaw;
 			//make sure chances are correct
-			if ((onlyCoreChance + onlyCritChance + onlyOverpowerChance + critOpChance) != 1){
+			let testChance = (onlyCoreChance + onlyCritChance + onlyOverpowerChance + critOpChance);
+			if (testChance < 0.99 || testChance > 1.01){
 				console.error("ERROR in DPS calculation: The combined chances are not 1.0. DPS set to 0.");
 				timeAvgDamageBase = 0;
 			}else{
@@ -644,7 +645,8 @@ function buildCalculator(containerEle, options){
 			timeAvgDamageSum += thisDamage;
 			elapsedTime += timeStepInSeconds;
 			if (steps < 100000){
-				dataPoints.push(thisDamage);
+				dataPoints.push(Math.round(thisDamage));
+				//dataPoints.push(thisDamage);
 			}
 		}
 		var averageDps = timeAvgDamageSum/elapsedTime;
