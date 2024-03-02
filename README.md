@@ -28,13 +28,15 @@ URL: https://bytemind-de.github.io/apps/d4/damage.html
 
 ### Ideas to improve it
 
-- Implement weapon speed and DPS (UPDATE: beta version for DPS added in v0.12.0, improved in v0.13.0)
+- Better support DoT (damage-over-time) skills
 - Add predefined properties (skills, passives, glyphs, paragon nodes etc.) for the user to select
-- Add damage groups to automatically switch between close/distant/stunned etc. (UPDATE: added types beta in v0.13.0)
+- Add damage groups to automatically switch between close/distant/stunned etc. (UPDATE: added some core types in v0.13.0)
 - Read the data from your actual account via some Blizzard API (d4armory seems to be able to do it, but how???)
 
 ### Known bugs / quirks
 
+- DPS is a complex topic and often depends on multiple other factors that currently cannot be accounted for like the number of enemies in range, area of attack, secondary hits and more.
+- The calculations do not directly support DoT damage right now, but you should be able to adjust your base damage and attack speed to find the correct damage values.
 - Stored data will be lost anytime the browser cleans up its local-storage, so make sure to export your data often!
 
 ### Screenshots
