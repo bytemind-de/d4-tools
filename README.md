@@ -29,7 +29,7 @@ URL: https://bytemind-de.github.io/apps/d4/damage.html
 ### Ideas to improve it
 
 - Better support DoT (damage-over-time) skills
-- Add predefined properties (skills, passives, glyphs, paragon nodes etc.) for the user to select
+- Add predefined properties (skills, passives, glyphs, paragon nodes etc.) for the user to select (UPDATE: added BETA in v0.13.1)
 - Add damage groups to automatically switch between close/distant/stunned etc. (UPDATE: added some core types in v0.13.0)
 - Read the data from your actual account via some Blizzard API (d4armory seems to be able to do it, but how???)
 
