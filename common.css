@@ -564,6 +564,7 @@ html.dark .group .type-box .type-element.empty {
 .pop-up-message-box {
 	width: 360px;
 	max-width: 90%;
+	max-height: calc(100vh - 40px);
 	padding: 16px;
 	border: 1px solid #000;
 	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
@@ -571,6 +572,11 @@ html.dark .group .type-box .type-element.empty {
 	color: #000;
 	margin: 8px 0 32px 0;
 	position: relative;
+	display: flex;
+}
+.pop-up-message-box .pop-up-content {
+	width: 100%;
+	overflow-y: auto;
 }
 html.dark .pop-up-message-box {
 	border: 1px solid #424242;
@@ -628,9 +634,21 @@ html.dark .pop-up-message-box {
 .pop-up-message-box form > .form-section.row input[type="checkbox"] {
 	margin: 0 8px;
 }
+.pop-up-message-box optgroup[label] {
+   font-style: inherit;
+   font-weight: 300;
+   text-shadow: none
+}
 .list-container {
 	display: flex;
 	flex-direction: column;
+	flex: 0 1 auto;
+	overflow-y: auto;
+}
+.list-container .list-label {
+	margin: 4px 0;
+	font-size: 13px;
+	font-weight: bold;
 }
 .list-container .list-item {
 	display: flex;
@@ -642,6 +660,10 @@ html.dark .pop-up-message-box {
 	border-style: solid;
 	border-width: 1px;
 	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+}
+.list-container .list-item.smaller-item {
+	margin: 1px 0 !important;
+	font-size: 12px;
 }
 html.dark .list-container .list-item {
 	box-shadow: 0 0 4px 1px #d2c8ae55;
@@ -655,6 +677,9 @@ html.dark .list-container .list-item.button-style:hover {
 .list-container .list-item-desc {
 	flex: 1 1 auto;
 	padding: 8px;
+}
+.list-container .list-item.smaller-item .list-item-desc {
+	padding: 4px 6px;
 }
 .list-container .list-item > button {
 	background: #d2c8ae;
