@@ -515,7 +515,7 @@ function loadStoredCalculator(){
 	createStoredCalculatorsPopUp(function(cfg){
 		//create a new calculator and restore data
 		if (cfg?.data){
-			var calc = addNewCalculator();
+			var calc = addNewCalculator(false);
 			calc.restoreData(cfg.data, cfg.name);
 		}
 	});
@@ -547,7 +547,7 @@ noConImportDataSelector.addEventListener('change', function(ev){
 			if (fileType == "singleConfig"){
 				//create new calculator and add data
 				if (data){
-					var calc = addNewCalculator();
+					var calc = addNewCalculator(false);
 					calc.restoreData(data);
 				}
 			}else if (fileType == "configArray"){
