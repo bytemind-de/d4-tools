@@ -200,7 +200,8 @@ function showPopUp(content, buttons, options){
 	return popUpOverlay;
 }
 function showFormPopUp(formFields, onSubmit){
-	var form = document.createElement("form");
+	var formEle = document.createElement("form");
+	var customData = {};
 	formFields.forEach(function(field, i){
 		var formSection = document.createElement("div");
 		formSection.className = "form-section";
@@ -232,6 +233,54 @@ function showFormPopUp(formFields, onSubmit){
 			}
 			ele.name = field.name || ("field" + i);
 			formSection.appendChild(ele);
+		
+		}else if (field.select){
+			let ele = document.createElement("select");
+			let optGroups = {};
+			field.select.options?.forEach(function(opt){
+				var optGrp;
+				if (opt.group){
+					optGrp = optGroups[opt.group];
+					if (!optGrp){
+						optGrp = document.createElement("optgroup");
+						optGrp.label = opt.group;
+						optGroups[opt.group] = optGrp;
+						ele.add(optGrp);
+					}
+				}
+				var optEle = document.createElement("option");
+				optEle.value = opt.value == undefined? (opt.name || opt.label) : opt.value;
+				optEle.text = opt.name || opt.label;
+				if (optGrp){
+					optGrp.appendChild(optEle);
+				}else{
+					ele.add(optEle);
+				}
+			});
+			if (field.title){
+				ele.title = field.title;
+			}
+			if (field.select.onChange){
+				ele.addEventListener("change", function(){
+					field.select.onChange(ele.value);
+				});
+			}
+			ele.value = field.value;
+			ele.name = field.name || ("field" + i);
+			formSection.appendChild(ele);
+		
+		}else if (field.customElement){
+			formSection.appendChild(field.customElement);
+		
+		}else if (field.customButton){
+			let ele = document.createElement("input");
+			ele.type = "button";
+			ele.className = "button-style";
+			ele.value = field.customButton.name || "Press";
+			ele.addEventListener("click", function(){ 
+				if (field.customButton.fun) field.customButton.fun();
+			});
+			formSection.appendChild(ele);
 		}
 		if (field.submit){
 			let ele = document.createElement("input");
@@ -240,15 +289,65 @@ function showFormPopUp(formFields, onSubmit){
 			ele.value = field.name || "Submit";
 			formSection.appendChild(ele);
 		}
-		form.appendChild(formSection);
+		formEle.appendChild(formSection);
 	});
-	form.addEventListener("submit", function(ev){
+	formEle.addEventListener("submit", function(ev){
 		ev.preventDefault();
 		var formData = new FormData(ev.target);
-		if (onSubmit) onSubmit(formData);
+		if (onSubmit) onSubmit(formData, customData);
 		popUp.popUpClose();
 	});
-	var popUp = showPopUp(form, [], {easyClose: false});
+	var popUp = showPopUp(formEle, [], {easyClose: false});
+	return {popUp, form: formEle};
+}
+function showList(items, options, onSelectCallback){
+	var content = document.createElement("div");
+	content.style.cssText = "display: flex; flex-direction: column; max-height: 100%;";
+	var list = document.createElement("div");
+	list.className = "list-container";
+	var addedGroupLabels = {};
+	items.forEach(function(itm){
+		var loadFun = function(ev){
+			if (onSelectCallback) onSelectCallback(itm);
+			popUp.popUpClose();
+		};
+		var item = document.createElement("div");
+		item.className = "list-item smaller-item button-style";
+		item.setAttribute("tabindex", "0");
+		item.addEventListener("click", loadFun);
+		item.addEventListener('keypress', function(ev){
+			if (ev.key === 'Enter' && ev.target == item) {
+			  loadFun(ev);
+			}
+		});
+		var itemDesc = document.createElement("div");
+		itemDesc.className = "list-item-desc";
+		itemDesc.textContent = itm.name || itm.label;
+		item.appendChild(itemDesc);
+		if (itm.group){
+			if (!addedGroupLabels[itm.group]){
+				let label = document.createElement("label");
+				label.className = "list-label";
+				addedGroupLabels[itm.group] = label;
+				label.textContent = itm.group;
+				list.appendChild(label);
+			}
+		}
+		list.appendChild(item);
+	});
+	if (options?.infoText){
+		var info = document.createElement("p");
+		info.textContent = options.infoText;
+		content.appendChild(info);
+	}
+	content.appendChild(list);
+	if (options?.footerText){
+		var footer = document.createElement("p");
+		footer.textContent = options.footerText;
+		content.appendChild(footer);
+	}
+	var popUp = showPopUp(content, [], {easyClose: false});
+	return {popUp, list};
 }
 function showDataGraph(dataPoints, title){
 	//prep. visualization
@@ -339,7 +438,7 @@ function plotBarChart(graphEle, xStart, xEnd, data, title){
 	});
 }
 
-function addDynamicMod(parentEle, modName, className, value, disabled, stepSize, selectableTypes, preselectedTypes){
+function addDynamicMod(parentEle, modName, className, value, disabled, stepSize, selectableTypes, preselectedTypes, searchList){
 	var newAddMod = document.createElement("div");
 	newAddMod.className = "group limit-label calc-item";
 	if (disabled){
@@ -352,12 +451,9 @@ function addDynamicMod(parentEle, modName, className, value, disabled, stepSize,
 	newAddModLabelSpan.style.cursor = "pointer";
 	newAddModLabelSpan.textContent = modName + ":";
 	newAddModLabelSpan.addEventListener("click", function(){
-		showFormPopUp([
-			{input: true, label: "Name:", name: "name", required: true,
-				value: newAddModLabelSpan.textContent.replace(/:$/, ""), title: "Name for this modifier."},
-			{submit: true, name: "Ok"}
-		], function(formData){
-			var newName = formData.get("name").trim();
+		addDynamicModPromptPromise(newAddModLabelSpan.textContent.replace(/:$/, ""), "", searchList)
+		.then(function(data){
+			var newName = data.name;
 			if (newName){
 				newAddMod.dataset.info = newName;
 				newAddModLabelSpan.textContent = newName + ":";
@@ -434,6 +530,52 @@ function addDynamicMod(parentEle, modName, className, value, disabled, stepSize,
 	newAddMod.appendChild(newAddModRemove);
 	parentEle.appendChild(newAddMod);
 	bytemind.dragdrop.addMoveHandler(newAddMod, parentEle, newAddModLabel);
+}
+function addDynamicModPromptPromise(initValue, promptText, searchList){
+	return new Promise((resolve) => {
+		var formPopUp;
+		var selectButton = undefined;
+		var selectElement = undefined;
+		if (searchList?.length){
+			/* selectButton = {
+				name: "Search Name (BETA)", fun: function(){
+					showList(searchList, {}, function(itm){
+						var nameInput = formPopUp.form.elements["name"];
+						if (nameInput) nameInput.value = itm.label;
+					});
+				}
+			}; */
+			var selectOptions = [{name: "- Select (BETA) -", value: ""}];
+			searchList.forEach(function(itm){
+				selectOptions.push({
+					name: itm.label, group: itm.group, value: JSON.stringify(itm)
+				});
+			});
+			selectElement = {
+				options: selectOptions,
+				onChange: function(json){
+					var data = JSON.parse(json || "{}");
+					var nameInput = formPopUp.form.elements["name"];
+					if (nameInput) nameInput.value = data.label || "";
+					if (data.label){
+						formPopUp.popUp.popUpClose();
+						resolve({name: data.label, entry: data});
+					}
+				}
+			};
+		}
+		var formConfig = [
+			{input: true, label: promptText || "Name:", name: "name", required: true, value: initValue, title: "Name for this modifier."}
+		];
+		if (selectButton) formConfig.push({customButton: selectButton});
+		if (selectElement) formConfig.push({select: selectElement, label: "Or select one from the list:", name: "names-selector", value: "", title: "Select a name from this predefined list."});
+		if (selectButton || selectElement) formConfig.push({spacer: true});
+		formConfig.push({submit: true, name: "Ok"});
+		formPopUp = showFormPopUp(formConfig, function(formData){
+			var newName = formData.get("name").trim();
+			resolve({name: newName, entry: undefined});
+		});
+	});
 }
 function addSelectableTypes(typeBoxEle, selectableTypes, newTypeSet){
 	typeBoxEle.innerHTML = "";		//clean up
@@ -518,6 +660,7 @@ function createStoredCalculatorsPopUp(onSelectCallback){
 		keys = keys.sort();
 		//console.error("storedConfigs", storedConfigs);		//DEBUG
 		var content = document.createElement("div");
+		content.style.cssText = "display: flex; flex-direction: column; max-height: 100%;";
 		var list = document.createElement("div");
 		list.className = "list-container";
 		keys.forEach(function(k){
@@ -555,7 +698,7 @@ function createStoredCalculatorsPopUp(onSelectCallback){
 			item.appendChild(delButton);
 			list.appendChild(item);
 		});
-		var info = document.createElement("p");
+		var info = document.createElement("div");
 		info.innerHTML = "<p>Choose a configuration:</p>";
 		var footer = document.createElement("div");
 		var btnBox = document.createElement("div");
