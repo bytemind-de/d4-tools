@@ -18,8 +18,7 @@ var selectableDamageTypes = [
 	{name: "Vulnerable Enemy", value: TYPE_VULNERABLE, className: vulnerableColor, color: ""},
 	{name: "Critical Strike", value: TYPE_CRIT, className: critColor, color: ""},
 	{name: "Overpower Strike", value: TYPE_OVERPOWER, className: overpowerColor, color: ""}
-	//{name: "Test", value: "test", className: "", color: "#0f0"},
-	//{name: "Test 2", value: "test2", className: "", color: "#00f"}
+	//{name: "Test", value: "test", className: "", color: "#0f0"}
 ];
 	
 function buildCalculator(containerEle, options){
@@ -101,19 +100,37 @@ function buildCalculator(containerEle, options){
 	}
 	
 	function addAdditiveMod(newName, startValue, isDisabled, selectedTypes){
-		var modName = newName || prompt("Enter a name for this '+' modifier:");
-		if (!modName) return;
-		addDynamicMod(addModifiersContainer, modName, "add-mod-val", startValue, isDisabled, 1.0, undefined, selectedTypes);
+		//var modName = newName || prompt("Enter a name for this '+' modifier:");
+		Promise.resolve(newName? {name: newName} : addDynamicModPromptPromise("", "Enter a name for this '+' modifier:", additiveDamageLabelsList))
+		.then(function(data){
+			var modName = data.name;
+			if (modName){
+				addDynamicMod(addModifiersContainer, modName, "add-mod-val", startValue, isDisabled, 1.0,
+					selectableDamageTypes, selectedTypes || data.entry?.types, additiveDamageLabelsList);
+			}
+		});
 	}
 	function addMultiplierMod(newName, startValue, isDisabled, selectedTypes){
-		var modName = newName || prompt("Enter a name for this '×' modifier:");
-		if (!modName) return;
-		addDynamicMod(multiModifiersContainer, modName, "multi-mod-val", startValue, isDisabled, 1.0, selectableDamageTypes, selectedTypes);
+		//var modName = newName || prompt("Enter a name for this '×' modifier:");
+		Promise.resolve(newName? {name: newName} : addDynamicModPromptPromise("", "Enter a name for this '×' modifier:", multiplicativeDamageLabelsList))
+		.then(function(data){
+			var modName = data.name;
+			if (modName){
+				addDynamicMod(multiModifiersContainer, modName, "multi-mod-val", startValue, isDisabled, 1.0,
+					selectableDamageTypes, selectedTypes || data.entry?.types, multiplicativeDamageLabelsList);
+			}
+		});
 	}
 	function addReductionMod(newName, startValue, isDisabled, selectedTypes){
-		var modName = newName || prompt("Enter a name for this damage reduction modifier:");
-		if (!modName) return;
-		addDynamicMod(reductionModifiersContainer, modName, "reduction-mod-val", startValue, isDisabled, 1.0, undefined, selectedTypes);
+		//var modName = newName || prompt("Enter a name for this damage reduction modifier:");
+		Promise.resolve(newName? {name: newName} : addDynamicModPromptPromise("", "Enter a name for this damage reduction modifier:"))
+		.then(function(data){
+			var modName = data.name;
+			if (modName){
+				addDynamicMod(reductionModifiersContainer, modName, "reduction-mod-val", startValue, isDisabled, 1.0,
+					undefined, selectedTypes || data.entry?.types);
+			}
+		});
 	}
 	
 	function getAdditiveModPcts(includeHidden){
@@ -236,7 +253,7 @@ function buildCalculator(containerEle, options){
 				"Core damage (no vulnerable/crit./overpower) after all additive modifiers have been applied.", false, true);
 		}
 		addResult("Max. damage after add. mod.", totalDamage, addModFactor, addModColor,
-			"Max. damage for most powerful hit, after all additive modifiers have been applied.", false, false);
+			"Max. damage for most powerful hit, after all additive modifiers have been applied.", false, true);
 		
 		addCustom("<hr>", "flat");
 		
@@ -791,13 +808,13 @@ function buildCalculator(containerEle, options){
 	}
 	//Add some DEMO values?
 	if (options?.addDemoContent){
-		addAdditiveMod("Example: Damage vs Distant", 30);
+		addAdditiveMod("Example: Damage while Healthy", 30);
 		addAdditiveMod("Example: Damage on Monday", 69);
-		addMultiplierMod("Example: Glass Cannon", 18);
+		addMultiplierMod("Example: Crit. Bonus", 18, false, ["crit"]);
 		addMultiplierMod("Example: Tibaults Will", 40);
 		addReductionMod("Character lvl. damage reduction", 75);
-	}else{
-		addReductionMod("Global damage reduction", 75);
+	}else if (!options?.cfg && options?.addDemoContent !== false){
+		addReductionMod("Character lvl. damage reduction", 75);
 	}
 	//Show/hide footer?
 	if (!options?.showFooter){
@@ -856,7 +873,7 @@ function loadStoredCalculator(){
 	createStoredCalculatorsPopUp(function(cfg){
 		//create a new calculator and restore data
 		if (cfg?.data){
-			var calc = addNewCalculator();
+			var calc = addNewCalculator(false);
 			calc.restoreData(cfg.data, cfg.name);
 		}
 	});
@@ -888,7 +905,7 @@ noConImportDataSelector.addEventListener('change', function(ev){
 			if (fileType == "singleConfig"){
 				//create new calculator and add data
 				if (data){
-					var calc = addNewCalculator();
+					var calc = addNewCalculator(false);
 					calc.restoreData(data);
 				}
 			}else if (fileType == "configArray"){
