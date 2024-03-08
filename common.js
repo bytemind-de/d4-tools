@@ -451,12 +451,14 @@ function addDynamicMod(parentEle, modName, className, value, disabled, stepSize,
 	newAddModLabelSpan.style.cursor = "pointer";
 	newAddModLabelSpan.textContent = modName + ":";
 	newAddModLabelSpan.addEventListener("click", function(){
-		addDynamicModPromptPromise(newAddModLabelSpan.textContent.replace(/:$/, ""), "", searchList)
+		//edit item by clicking the label
+		addDynamicModPromptPromise(newAddModLabelSpan.textContent.replace(/:$/, ""), "", searchList, selectableTypes, selectedTypes)
 		.then(function(data){
 			var newName = data.name;
 			if (newName){
 				newAddMod.dataset.info = newName;
 				newAddModLabelSpan.textContent = newName + ":";
+				updateSelectableType(undefined, data.entry?.types);
 			}
 		});
 	});
@@ -485,6 +487,20 @@ function addDynamicMod(parentEle, modName, className, value, disabled, stepSize,
 	});
 	var typeBoxEle;
 	var selectedTypes = preselectedTypes || [];
+	var updateSelectableType = function(stFormData, stArray){
+		var newTypeSet = [];
+		selectableTypes?.forEach(function(itm){
+			var newType = stFormData? !!stFormData.get(itm.value) : stArray.includes(itm.value);	//check form or array
+			if (newType){
+				newTypeSet.push(itm.value);
+			}
+		});
+		//add elements
+		addSelectableTypes(typeBoxEle, selectableTypes, newTypeSet);
+		//set state
+		newAddModInput.dataset.selectedTypes = JSON.stringify(newTypeSet);
+		selectedTypes = newTypeSet;
+	}
 	if (selectableTypes){
 		newAddModInput.dataset.selectedTypes = JSON.stringify(selectedTypes);
 		typeBoxEle = document.createElement("div");
@@ -495,31 +511,11 @@ function addDynamicMod(parentEle, modName, className, value, disabled, stepSize,
 		//type select UI
 		typeBoxEle.addEventListener("click", function(){
 			//create options
-			var options = [{
-				label: typeBoxEle.title
-			}];
-			selectableTypes.forEach(function(itm){
-				options.push({
-					checkbox: true, label: itm.name, name: itm.value,
-					value: (selectedTypes.indexOf(itm.value) >= 0),
-					title: "Select this value to assign the item the type '" + itm.value + "'."
-				});
-			});
+			var options = buildSelectableTypeOptions(typeBoxEle.title, selectableTypes, selectedTypes);
 			options.push({spacer: true}, {submit: true, name: "Ok"});
 			//show popup
 			showFormPopUp(options, function(formData){
-				var newTypeSet = [];
-				selectableTypes.forEach(function(itm){
-					var newType = !!formData.get(itm.value);
-					if (newType){
-						newTypeSet.push(itm.value);
-					}
-				});
-				//add elements
-				addSelectableTypes(typeBoxEle, selectableTypes, newTypeSet);
-				//set state
-				newAddModInput.dataset.selectedTypes = JSON.stringify(newTypeSet);
-				selectedTypes = newTypeSet;
+				updateSelectableType(formData, []);
 			});
 		});
 	}
@@ -531,7 +527,8 @@ function addDynamicMod(parentEle, modName, className, value, disabled, stepSize,
 	parentEle.appendChild(newAddMod);
 	bytemind.dragdrop.addMoveHandler(newAddMod, parentEle, newAddModLabel);
 }
-function addDynamicModPromptPromise(initValue, promptText, searchList){
+function addDynamicModPromptPromise(initValue, promptText, searchList, selectableTypes, selectedTypes){
+	//Prompt to input name for new item and optionally select types
 	return new Promise((resolve) => {
 		var formPopUp;
 		var selectButton = undefined;
@@ -558,8 +555,12 @@ function addDynamicModPromptPromise(initValue, promptText, searchList){
 					var nameInput = formPopUp.form.elements["name"];
 					if (nameInput) nameInput.value = data.label || "";
 					if (data.label){
-						formPopUp.popUp.popUpClose();
-						resolve({name: data.label, entry: data});
+						//formPopUp.popUp.popUpClose();
+						//resolve({name: data.label, entry: data});
+						selectedTypes = data.types;
+						selectableTypes?.forEach(function(itm){
+							formPopUp.form.elements[itm.value].checked = selectedTypes.includes(itm.value)? true : false;
+						});
 					}
 				}
 			};
@@ -570,14 +571,41 @@ function addDynamicModPromptPromise(initValue, promptText, searchList){
 		if (selectButton) formConfig.push({customButton: selectButton});
 		if (selectElement) formConfig.push({select: selectElement, label: "Or select one from the list:", name: "names-selector", value: "", title: "Select a name from this predefined list."});
 		if (selectButton || selectElement) formConfig.push({spacer: true});
+		if (selectableTypes?.length){
+			let typeOptions = buildSelectableTypeOptions("Select required 'types' (optional):", selectableTypes, selectedTypes || []);
+			typeOptions.push({spacer: true});
+			formConfig.push(...typeOptions);
+		}
 		formConfig.push({submit: true, name: "Ok"});
 		formPopUp = showFormPopUp(formConfig, function(formData){
 			var newName = formData.get("name").trim();
-			resolve({name: newName, entry: undefined});
+			selectedTypes = [];
+			selectableTypes?.forEach(function(itm){
+				var newType = !!formData.get(itm.value);
+				if (newType){
+					selectedTypes.push(itm.value);
+				}
+			});
+			resolve({name: newName, entry: {label: newName, types: selectedTypes}});
 		});
 	});
 }
+function buildSelectableTypeOptions(label, selectableTypes, selectedTypes){
+	var options = [{
+		label: label
+	}];
+	selectableTypes.forEach(function(itm){
+		options.push({
+			checkbox: true, label: itm.name, name: itm.value,
+			value: (selectedTypes.indexOf(itm.value) >= 0),
+			title: "Select this value to make '" + itm.value + "' a required property for the item."
+		});
+	});
+	return options;
+}
 function addSelectableTypes(typeBoxEle, selectableTypes, newTypeSet){
+	//add visual type indicators to item element
+	if (!typeBoxEle) return;
 	typeBoxEle.innerHTML = "";		//clean up
 	typeBoxEle.classList.remove("bigger");
 	if (!newTypeSet.length){
@@ -587,7 +615,7 @@ function addSelectableTypes(typeBoxEle, selectableTypes, newTypeSet){
 		typeBoxEle.appendChild(typeEle);
 		return;
 	}
-	selectableTypes.forEach(function(itm){
+	selectableTypes?.forEach(function(itm){
 		if (newTypeSet.indexOf(itm.value) >= 0){
 			let typeEle = document.createElement("div");
 			typeEle.className = "type-element";

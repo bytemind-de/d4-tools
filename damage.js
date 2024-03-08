@@ -101,7 +101,8 @@ function buildCalculator(containerEle, options){
 	
 	function addAdditiveMod(newName, startValue, isDisabled, selectedTypes){
 		//var modName = newName || prompt("Enter a name for this '+' modifier:");
-		Promise.resolve(newName? {name: newName} : addDynamicModPromptPromise("", "Enter a name for this '+' modifier:", additiveDamageLabelsList))
+		Promise.resolve(newName? {name: newName} : addDynamicModPromptPromise("", "Enter a name for this '+' modifier:",
+			additiveDamageLabelsList, selectableDamageTypes, selectedTypes))
 		.then(function(data){
 			var modName = data.name;
 			if (modName){
@@ -112,7 +113,8 @@ function buildCalculator(containerEle, options){
 	}
 	function addMultiplierMod(newName, startValue, isDisabled, selectedTypes){
 		//var modName = newName || prompt("Enter a name for this '×' modifier:");
-		Promise.resolve(newName? {name: newName} : addDynamicModPromptPromise("", "Enter a name for this '×' modifier:", multiplicativeDamageLabelsList))
+		Promise.resolve(newName? {name: newName} : addDynamicModPromptPromise("", "Enter a name for this '×' modifier:",
+			multiplicativeDamageLabelsList, selectableDamageTypes, selectedTypes))
 		.then(function(data){
 			var modName = data.name;
 			if (modName){
