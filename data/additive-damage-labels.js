@@ -1,7 +1,6 @@
 var additiveDamageLabelsList = [
 	{label: "All Damage", group: "", types: []},
-	{label: "Crit. Damage vs Vulnerable", group: "", types: []},
-	{label: "Crit. Damage with Bone", group: "", types: []},
+	{label: "Bone Crit. Damage", group: "", types: []},
 	{label: "Damage vs Bleeding", group: "", types: []},
 	{label: "Damage vs Burning", group: "", types: []},
 	{label: "Damage vs Chilled", group: "", types: []},

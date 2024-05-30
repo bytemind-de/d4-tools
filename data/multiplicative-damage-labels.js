@@ -5,6 +5,7 @@ var multiplicativeDamageLabelsList = [
 	{label: "Item: Banished Lords", group: "All", types: ["crit", "overpower"]},
 	{label: "Item: Grandfather", group: "All", types: ["crit"]},
 	{label: "Item: Ring of Starless Sk.", group: "All", types: []},
+	{label: "Item: Tal Rasha's", group: "All", types: []},
 	{label: "Item: Tibaults Will", group: "All", types: []},
 	//Barbarian
 	{label: "Aspect: Ancestral Force", group: "Barbarian", types: []},
@@ -17,8 +18,8 @@ var multiplicativeDamageLabelsList = [
 	{label: "Glyph: Might", group: "Barbarian", types: []},
 	{label: "Glyph: Rumble", group: "Barbarian", types: []},
 	{label: "Glyph: Twister", group: "Barbarian", types: []},
-	{label: "Item: Tuskhelm", group: "Barbarian", types: []},
 	{label: "Item: Ring of Red Furor", group: "Barbarian", types: ["crit"]},
+	{label: "Item: Tuskhelm", group: "Barbarian", types: []},
 	{label: "Key Pass.: Unbridled Rage", group: "Barbarian", types: []},
 	{label: "Key Pass.: Unconstrained", group: "Barbarian", types: []},
 	{label: "Key Pass.: Walking Arsenal", group: "Barbarian", types: []},
@@ -29,8 +30,8 @@ var multiplicativeDamageLabelsList = [
 	{label: "Pass.: Heavy Handed", group: "Barbarian", types: ["crit"]},
 	{label: "Pass.: Pit Fighter", group: "Barbarian", types: []},
 	{label: "Pass.: Wallop", group: "Barbarian", types: ["vulnerable"]},
-	{label: "Skill: Wrath o.t. Berserker", group: "Barbarian", types: []},
 	{label: "Skill: War Cry", group: "Barbarian", types: []},
+	{label: "Skill: Wrath o.t. Berserker", group: "Barbarian", types: []},
 	{label: "Weapon Expertise: Axe", group: "Barbarian", types: ["crit", "vulnerable"]},
 	{label: "Weapon Expertise: Mace", group: "Barbarian", types: ["vulnerable"]},
 	//Sorc
@@ -65,5 +66,11 @@ var multiplicativeDamageLabelsList = [
 	{label: "Pass.: Inner Flames", group: "Sorc", types: []},
 	{label: "Pass.: Permafrost", group: "Sorc", types: []},
 	{label: "Pass.: Shocking Impact", group: "Sorc", types: []},
+	//Necro
+	//...
+	//Rogue
+	//...
+	//Druid
+	//...
 ]
 //TODO: add more
