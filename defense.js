@@ -228,7 +228,7 @@ function buildCalculator(containerEle, options){
 				undefined, armorItemColor, "Physical damage reduction based on total armor and enemy level.");
 		var armorDiffToCap = calculateMissingOrExcessArmor(totalArmor, data.enemyLevel);
 		addResult("Armor required for 85% cap", "approx. " + Math.round(armorDiffToCap).toLocaleString(),
-				undefined, armorItemColorAlt, "Approx. armor required to reach 85% DR cap vs given monster level.\nBased on findings and formula by SkyLineOW.", true);
+				undefined, armorItemColorAlt, "Approx. armor required to reach 85% DR cap vs given monster level.\nBased on S4 cap and findings and formula by SkyLineOW.", true);
 		addCustom("<hr>", "flat");
 		
 		//life
@@ -282,6 +282,8 @@ function buildCalculator(containerEle, options){
 	}
 	
 	function calculateArmorDr(playerArmor, monsterLevel){
+		//season 4 armor cap is 9230
+		if (playerArmor >= 9230) return 0.85;
 		//Reference by SkyLineOW:
 		//https://www.reddit.com/r/Diablo/comments/152gd9u/i_mostly_cracked_the_d4_armor_formula_and_made_a/
 		var w0 = 24.95675343;
