@@ -452,6 +452,9 @@ html.dark input.highlight {
 .group input.highlight.reduction-mod-val {
 	border-color: #aaa;
 }
+.group input.highlight.penalty-mod-val {
+	border-color: #ff983e;
+}
 .group.calc-item.hidden {
 	opacity: 0.33;
 }
@@ -517,7 +520,16 @@ html.dark .group .type-box .type-element.empty {
 	color: #aaa;
 }
 .color-reduction-mod-light {
+	color: #919191;
+}
+html.dark .color-reduction-mod-light {
 	color: #ccc;
+}
+.color-penalty-mod {
+	color: #ff983e;
+}
+.color-penalty-mod-light {
+	color: #ffb26f;
 }
 .color-life {
 	color: #b71814;

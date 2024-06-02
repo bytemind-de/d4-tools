@@ -4,6 +4,8 @@ var lifeItemColor = "color-life";
 var lifeItemColorAlt = "color-life-alt";
 var reductionModColor = "color-reduction-mod";
 var reductionModColorLight = "color-reduction-mod-light";
+var penaltyModColor = "color-penalty-mod";
+var penaltyModColorLight = "color-penalty-mod-light";
 var elementalResisColor = "color-elemental-resis";
 var elementalResisColorAlt = "color-elemental-resis-alt";
 	
@@ -30,6 +32,8 @@ function buildCalculator(containerEle, options){
 	var maxlifePctBtn = containerEle.querySelector("[name=maxlife-pct-btn]");
 	var drValuesContainer = containerEle.querySelector("[name=dr-values-container]");
 	var drValuesBtn = containerEle.querySelector("[name=dr-values-btn]");
+	var penaltyValuesContainer = containerEle.querySelector("[name=penalty-values-container]");
+	var penaltyValuesBtn = containerEle.querySelector("[name=penalty-values-btn]");
 	
 	var enemyLevelEle = containerEle.querySelector("[name=enemy-level]");
 	
@@ -94,6 +98,11 @@ function buildCalculator(containerEle, options){
 		if (!modName) return;
 		addDynamicMod(drValuesContainer, modName, "reduction-mod-val", startValue, isDisabled, 0.1, undefined, selectedTypes);
 	}
+	function addPenaltyPctValue(newName, startValue, isDisabled, selectedTypes){
+		var modName = newName || prompt("Enter a name for this penalty modifier:");
+		if (!modName) return;
+		addDynamicMod(penaltyValuesContainer, modName, "penalty-mod-val", startValue, isDisabled, 0.1, undefined, selectedTypes);
+	}
 	
 	function getArmorItems(includeHidden){
 		var items = [];
@@ -154,6 +163,21 @@ function buildCalculator(containerEle, options){
 	function getReductionModPcts(includeHidden){
 		var factors = [];
 		drValuesContainer.querySelectorAll(".reduction-mod-val").forEach(ele => {
+			if (ele.value && (includeHidden || !ele.parentElement.classList.contains("hidden"))){
+				factors.push({
+					pct: +ele.value,
+					info: ele.parentElement.dataset.info,
+					group: ele.parentElement.dataset.group,
+					disabled: ele.parentElement.classList.contains("hidden"),
+					types: JSON.parse(ele.dataset?.selectedTypes || "[]")
+				});
+			}
+		});
+		return factors;
+	}
+	function getPenaltyModPcts(includeHidden){
+		var factors = [];
+		penaltyValuesContainer.querySelectorAll(".penalty-mod-val").forEach(ele => {
 			if (ele.value && (includeHidden || !ele.parentElement.classList.contains("hidden"))){
 				factors.push({
 					pct: +ele.value,
@@ -262,15 +286,28 @@ function buildCalculator(containerEle, options){
 			}
 		}, 1.0);
 		if (data.isFortified){
-			dmgLeftPct *= 0.9;
+			dmgLeftPct *= 0.85;		//NOTE: updated for S4 with 15% instead of 10%
 		}
 		var totalDr = (1.0 - dmgLeftPct);
 		addResult("Total damage reduction", Math.round(totalDr * 100).toLocaleString() + "%", undefined, reductionModColor,
 				"Total damage reduction applying all percentages.");
 		addCustom("<hr>", "flat");
 		
+		//damage penalties (e.g. glass cannon, etc.)
+		var dmgPenaltyPct = data.damagePenalty.reduce(function(dmgPen, item){
+			if (item.disabled) return dmgPen;
+			else {
+				return (dmgPen * (1.0 + item.pct/100));
+			}
+		}, 1.0);
+		if (dmgPenaltyPct > 1.0){
+			addResult("Total additional damage taken", Math.round(dmgPenaltyPct * 100 - 100).toLocaleString() + "%", undefined, penaltyModColor,
+					"Total damage penalty applying all percentages.");
+			addCustom("<hr>", "flat");
+		}
+		
 		//effective life for all damage groups
-		var effectiveLifeBase = maximumLife/dmgLeftPct;
+		var effectiveLifeBase = maximumLife/dmgLeftPct * (1/dmgPenaltyPct);
 		var effectiveLifeVsPhysical = effectiveLifeBase/(1.0 - physicalDrFromArmor);
 		var effectiveLifeVsElemental = effectiveLifeBase/(1.0 - data.elementalResisSingle/100);
 		addResult("Base effective life", effectiveLifeBase, undefined, reductionModColorLight,
@@ -329,7 +366,8 @@ function buildCalculator(containerEle, options){
 			armorModifiers: getArmorModPcts(true),
 			maxlifeItems: getMaxlifeItems(true),
 			maxlifeModifiers: getMaxlifeModPcts(true),
-			damageReduction: getReductionModPcts(true)
+			damageReduction: getReductionModPcts(true),
+			damagePenalty: getPenaltyModPcts(true)
 		}
 		return data;
 	}
@@ -368,6 +406,12 @@ function buildCalculator(containerEle, options){
 		if (data.damageReduction?.length){
 			data.damageReduction.forEach(function(itm){
 				addDrPctValue(itm.info, itm.pct, itm.disabled, itm.types);
+			});
+		}
+		penaltyValuesContainer.innerHTML = "";
+		if (data.damagePenalty?.length){
+			data.damagePenalty.forEach(function(itm){
+				addPenaltyPctValue(itm.info, itm.pct, itm.disabled, itm.types);
 			});
 		}
 		setTitle(calculatorName || data.calculatorName || "Unnamed Calculator");
@@ -425,6 +469,7 @@ function buildCalculator(containerEle, options){
 	maxlifeItemsBtn.addEventListener('click', function(){ addMaxlifeItem(); });
 	maxlifePctBtn.addEventListener('click', function(){ addMaxlifePctValue(); });
 	drValuesBtn.addEventListener('click', function(){ addDrPctValue(); });
+	penaltyValuesBtn.addEventListener('click', function(){ addPenaltyPctValue(); });
 	calculateBtn.addEventListener('click', calculateDefense);
 	saveBtn.addEventListener('click', saveData);
 	loadBtn.addEventListener('click', loadData);
@@ -446,19 +491,31 @@ function buildCalculator(containerEle, options){
 	}
 	//Add some DEMO values?
 	if (options?.addDemoContent){
-		addArmorItem("Chest", 1450);
-		addArmorItem("Pants", 850);
-		addArmorPctValue("Helm", 24);
-		addArmorPctValue("Chest", 28.5);
-		addMaxlifeItem("Helm", 1159);
+		addArmorItem("Helm", 1156);
+		addArmorItem("Chest", 1619);
+		addArmorItem("Gloves", 462);
+		addArmorItem("Pants", 925);
+		addArmorPctValue("Helm", 15);
+		addMaxlifeItem("Helm", 0);
+		addMaxlifeItem("Chest", 1159);
+		addMaxlifeItem("Gloves", 0);
+		addMaxlifeItem("Pants", 1159);
+		addMaxlifeItem("Boots", 0);
+		addMaxlifeItem("Amulet", 0);
 		addMaxlifeItem("Ring", 1310);
-		addMaxlifePctValue("Ruby 4%", 4);
-		addMaxlifePctValue("Ruby 4%", 4);
-		addMaxlifePctValue("Paragon Node 4%", 4);
-		addMaxlifePctValue("Paragon Node 2%", 2);
+		addMaxlifeItem("Ring", 1310);
+		addMaxlifeItem("Weapons", 0);
+		addMaxlifePctValue("Ruby", 6);
+		addMaxlifePctValue("Ruby", 6);
+		addMaxlifePctValue("Ruby", 6);
+		addMaxlifePctValue("Paragon Node", 4);
+		addMaxlifePctValue("Paragon Node", 2);
+		addMaxlifePctValue("Paragon Node", 2);
 		addDrPctValue("DR vs All", 10);
+		addDrPctValue("DR vs Elite", 12);
 		addDrPctValue("DR vs Close", 24);
 		addDrPctValue("DR vs Distant", 18, true);
+		addPenaltyPctValue("Pass.: Class Cannon", 9, true);
 	}
 	//Show/hide footer?
 	if (!options?.showFooter){

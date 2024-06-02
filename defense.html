@@ -33,7 +33,7 @@
 	
 	<script>
 		var d4cType = "defcalc";	//TODO: this is added to the storage key and can in theory be in conflict with calc name
-		var d4cVersion = "0.4.0";
+		var d4cVersion = "0.4.1";
 		var d4season = "4";
 	</script>
 </head>
@@ -111,11 +111,11 @@
 					<div class="section">
 						<div class="group calc-item" title="Your base life, taken from character stats menu. Note: depends on your character level.">
 							<label class="has-info">Base life:</label>
-							<input name="char-base-life" class="" type="number" value="5000">
+							<input name="char-base-life" class="" type="number" value="7959">
 						</div>
 						<div class="group calc-item" title="Your strength. Will be applied to base armor.">
 							<label class="has-info">Strength:</label>
-							<input name="char-strength" class="" type="number" value="600">
+							<input name="char-strength" class="" type="number" value="400">
 						</div>
 					</div>
 				</div>
@@ -160,7 +160,7 @@
 				</div>
 				<div class="section-group">
 					<div class="section">
-						<p class="has-info" title="Additional life through percentage modifiers like ruby gems or unique items like Doombringer etc. Please add each ruby and each paragon node as single entry!"
+						<p class="has-info" title="Additional life through percentage modifiers like ruby gems, passives or unique items like Doombringer etc. Please add each ruby and each paragon node as single entry!"
 							>Max. life modifiers ([%] rubies, paragon, etc.):</p>
 						<div name="maxlife-pct-container" class="modifiers-container"></div>
 						<div class="group right">
@@ -175,6 +175,16 @@
 						<div name="dr-values-container" class="modifiers-container"></div>
 						<div class="group right">
 							<button class="button-bold" name="dr-values-btn" title="Add new value">+</button>
+						</div>
+					</div>
+				</div>
+				<div class="section-group">
+					<div class="section">
+						<p class="has-info" title="Additional damage taken in percent. Add each item individually."
+							>Additional damage taken ([%] passives etc.):</p>
+						<div name="penalty-values-container" class="modifiers-container"></div>
+						<div class="group right">
+							<button class="button-bold" name="penalty-values-btn" title="Add new value">+</button>
 						</div>
 					</div>
 				</div>
