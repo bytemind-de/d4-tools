@@ -7,12 +7,12 @@
 	<meta name="mobile-web-app-capable" content="yes">
 	<link rel="icon" type="image/png" href="favicon.png">
 	
-	<link rel="stylesheet" href="common.css">
+	<link rel="stylesheet" href="common.css?v=0.15.0">
 	<script src="dragdrop.js"></script>
-	<script defer src="common.js?v=0.13.2"></script>
-	<script defer src="damage.js?v=0.14.0"></script>
-	<script defer src="data/additive-damage-labels.js"></script>
-	<script defer src="data/multiplicative-damage-labels.js"></script>
+	<script defer src="common.js?v=0.15.0"></script>
+	<script defer src="damage.js?v=0.15.0"></script>
+	<script defer src="data/additive-damage-labels.js?v=0.15.0"></script>
+	<script defer src="data/multiplicative-damage-labels.js?v=0.15.0"></script>
 
 	<title>D4 Damage Calculator</title>
 	<!-- open graph settings -->
@@ -35,8 +35,8 @@
 	
 	<script>
 		var d4cType = "dmgcalc";	//TODO: this is added to the storage key and can in theory be in conflict with calc name
-		var d4cVersion = "0.14.0";
-		var d4season = "4";
+		var d4cVersion = "0.15.0";
+		var d4season = "5";
 	</script>
 </head>
 <body>
@@ -111,6 +111,20 @@
 						<span style="width: 15px; margin-left: 4px;">&#9878;</span>
 					</div>
 					<div class="section">
+						<div class="group calc-item" title="Your character class. Some damage values depend on your class, e.g. the main stat (since S5)." data-tooltip-id="char-class-01">
+							<label class="emphasize has-info" data-text-id="char-class-01">Character class:</label>
+							<select name="char-class" class="highlight">
+								<option value='' disabled selected>- select -</option>
+								<option value='Barbarian'>Barbarian</option>
+								<option value='Druid'>Druid</option>
+								<option value='Necro'>Necromancer</option>
+								<option value='Rogue'>Rogue</option>
+								<option value='Sorc'>Sorcerer</option>
+								<!--<option value='Spiritborn'>Spiritborn</option>-->
+							</select>
+						</div>
+					</div>
+					<div class="section">
 						<div class="group calc-item" title="Damage of your weapon used to cast the skill, taken from character stats menu.">
 							<label class="emphasize has-info">Primary weapon damage:</label>
 							<input name="base-damage" class="highlight border-col-base" type="number" value="100">
@@ -130,6 +144,10 @@
 						<div class="group calc-item" title="Your character's primary stat (strength, dexterity, ...).">
 							<label class="emphasize has-info">Main stat (str, int, dex, wil):</label>
 							<input name="main-stat" class="highlight" type="number" value="100">
+						</div>
+						<div class="group calc-item" title="Damage bonus due to main stat value (calculated automatically for each class).">
+							<label class="emphasize has-info">Damage bonus from stat (%):</label>
+							<input name="main-stat-dmg" class="" type="number" value="0" disabled>
 						</div>
 						<div class="group calc-item" title="Base and maximum life. Used for example to calculate overpower damage.">
 							<div style="margin-right: 16px;">

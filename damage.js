@@ -20,7 +20,17 @@ var selectableDamageTypes = [
 	{name: "Overpower Strike", value: TYPE_OVERPOWER, className: overpowerColor, color: ""}
 	//{name: "Test", value: "test", className: "", color: "#0f0"}
 ];
-	
+
+var classSpecificValues = {
+	"Barb": {mainStatScaling: 10},
+	"Druid": {mainStatScaling: 8},
+	"Necro": {mainStatScaling: 8},
+	"Rogue": {mainStatScaling: 9},
+	"Sorc": {mainStatScaling: 8},
+	"Spiritborn": {mainStatScaling: 8}
+}
+var getCharClass = function(){ return ""; };	//NOTE: set inside 'buildCalculator'
+
 function buildCalculator(containerEle, options){
 	var Calculator = {
 		id: ("calc-" + Date.now() + Math.round(Math.random() * 1000000)),
@@ -29,10 +39,21 @@ function buildCalculator(containerEle, options){
 		getData: getData
 	};
 
+	var charClassEle = containerEle.querySelector("[name=char-class]");
+	charClassEle?.addEventListener("change", function(){
+		updateClassSpecificValues();
+		disableCalculationBox();
+	});
+	getCharClass = function(){ return charClassEle?.value || ""; };
+	
 	var baseDamageEle = containerEle.querySelector("[name=base-damage]");
 	var attackSpeedEle = containerEle.querySelector("[name=attack-speed]");
 	var skillDamageEle = containerEle.querySelector("[name=skill-damage]");
 	var mainStatEle = containerEle.querySelector("[name=main-stat]");
+	var mainStatDmgEle = containerEle.querySelector("[name=main-stat-dmg]");
+	mainStatEle.addEventListener("change", function(){
+		updateClassSpecificValues();
+	});
 	var baseLifeEle = containerEle.querySelector("[name=char-base-life]");
 	var maxLifeEle = containerEle.querySelector("[name=char-max-life]");
 	var vulnerableDamageEle = containerEle.querySelector("[name=vulnerable-damage]");
@@ -41,6 +62,8 @@ function buildCalculator(containerEle, options){
 	var overpowerDamageAddEle = containerEle.querySelector("[name=overpower-damage-add]");
 	var overpowerOnNthAttackEle = containerEle.querySelector("[name=overpower-nth-attack]");
 	var isFortified = containerEle.querySelector("[name=char-is-fortified]");
+	isFortified.addEventListener("click", function(){
+		disableCalculationBox(); });
 	var critDamageEle = containerEle.querySelector("[name=critical-damage]");
 	var critDamageAddEle = containerEle.querySelector("[name=critical-damage-add]");
 	var critChanceEle = containerEle.querySelector("[name=critical-hit-chance]");
@@ -61,11 +84,11 @@ function buildCalculator(containerEle, options){
 	var doCalcVulnerable = containerEle.querySelector("[name=do-calc-vulnerable]");
 	var doCalcOverpower = containerEle.querySelector("[name=do-calc-overpower]");
 	doCalcVulnerable.addEventListener("click", function(){
-		simulationContainer.parentElement.style.display = "none"; });
+		disableCalculationBox(); });
 	doCalcCrit.addEventListener("click", function(){
-		simulationContainer.parentElement.style.display = "none"; });
+		disableCalculationBox(); });
 	doCalcOverpower.addEventListener("click", function(){
-		simulationContainer.parentElement.style.display = "none"; });
+		disableCalculationBox(); });
 	
 	var saveBtn = containerEle.querySelector("[name=save-btn]");
 	var loadBtn = containerEle.querySelector("[name=load-btn]");
@@ -107,7 +130,7 @@ function buildCalculator(containerEle, options){
 			var modName = data.name;
 			if (modName){
 				addDynamicMod(addModifiersContainer, modName, "add-mod-val", startValue, isDisabled, 1.0,
-					selectableDamageTypes, selectedTypes || data.entry?.types, additiveDamageLabelsList);
+					selectableDamageTypes, selectedTypes || data.entry?.types, additiveDamageLabelsList, onModUpdate);
 			}
 		});
 	}
@@ -119,7 +142,7 @@ function buildCalculator(containerEle, options){
 			var modName = data.name;
 			if (modName){
 				addDynamicMod(multiModifiersContainer, modName, "multi-mod-val", startValue, isDisabled, 1.0,
-					selectableDamageTypes, selectedTypes || data.entry?.types, multiplicativeDamageLabelsList);
+					selectableDamageTypes, selectedTypes || data.entry?.types, multiplicativeDamageLabelsList, onModUpdate);
 			}
 		});
 	}
@@ -130,9 +153,13 @@ function buildCalculator(containerEle, options){
 			var modName = data.name;
 			if (modName){
 				addDynamicMod(reductionModifiersContainer, modName, "reduction-mod-val", startValue, isDisabled, 1.0,
-					undefined, selectedTypes || data.entry?.types);
+					undefined, selectedTypes || data.entry?.types, undefined, onModUpdate);
 			}
 		});
+	}
+	
+	function onModUpdate(data){
+		disableCalculationBox();
 	}
 	
 	function getAdditiveModPcts(includeHidden){
@@ -209,9 +236,32 @@ function buildCalculator(containerEle, options){
 		resultContainer.appendChild(div);
 	}
 	
-	function calculateDamage(){
+	function updateClassSpecificValues(){
+		var mainStatScaling = (classSpecificValues[getCharClass()] || {}).mainStatScaling || 10;
+		mainStatDmgEle.value = (mainStatEle.value / mainStatScaling).toFixed(1);
+	}
+	
+	function clearCalculation(){
 		resultContainer.innerHTML = "";
-		resultContainer.parentElement.style.removeProperty('display');
+		resultContainer.parentElement.style.display = "none";
+		simulationContainer.parentElement.style.display = "none";
+	}
+	function disableCalculationBox(){
+		resultContainer.parentElement.style.opacity = 0.50;
+		simulationContainer.parentElement.style.display = "none";
+	}
+	function enableCalculationBox(){
+		resultContainer.parentElement.style.removeProperty("display");
+		resultContainer.parentElement.style.removeProperty("opacity");
+		simulationContainer.parentElement.style.removeProperty('display');
+	}
+	
+	function calculateDamage(){
+		clearCalculation();
+		enableCalculationBox();
+		updateClassSpecificValues();
+		
+		var charClass = getCharClass();
 		
 		var totalDamage = 0;
 		var storedDamage = {};
@@ -225,7 +275,8 @@ function buildCalculator(containerEle, options){
 			"Average base damage done with the given weapon and skill.");
 		addCustom("<hr>", "flat");
 		
-		var mainStatFactor = 1.0 + (+mainStatEle.value || 0.0) / 1000;
+		//var mainStatFactor = 1.0 + (+mainStatEle.value || 0.0) / 1000;	//NOTE: changed in S5
+		var mainStatFactor = 1.0 + (+mainStatDmgEle.value || 0.0) / 100;
 		totalDamage = totalDamage * mainStatFactor;		//baseDamage * skillDamageFactor * ...
 		var coreDamage = totalDamage;
 		addResult("Main stat.", totalDamage, mainStatFactor, undefined,
@@ -474,7 +525,6 @@ function buildCalculator(containerEle, options){
 				});
 			}, 0);
 		}
-		simulationContainer.parentElement.style.removeProperty('display');
 	}
 	function getIncludedDamageTypesAndKey(doVulnerable, doCrit, doOverpower){
 		var includedDamageTypes = [];
@@ -677,6 +727,7 @@ function buildCalculator(containerEle, options){
 	function getData(){
 		var data = {
 			calculatorName: getTitle(),
+			charClass: getCharClass(),
 			baseDamage: +baseDamageEle.value,
 			attackSpeed: +attackSpeedEle.value,
 			skillDamage: +skillDamageEle.value,
@@ -699,9 +750,9 @@ function buildCalculator(containerEle, options){
 		return data;
 	}
 	function restoreData(data, calculatorName){
-		resultContainer.innerHTML = "";
-		resultContainer.parentElement.style.display = "none";
-		simulationContainer.parentElement.style.display = "none";
+		clearCalculation();
+		
+		if (charClassEle) charClassEle.value = data.charClass || "";
 		baseDamageEle.value = data.baseDamage || 100;
 		attackSpeedEle.value = data.attackSpeed || 1.0;
 		skillDamageEle.value = data.skillDamage || 50;
@@ -736,6 +787,8 @@ function buildCalculator(containerEle, options){
 			});
 		}
 		setTitle(calculatorName || data.calculatorName || "Unnamed Calculator");
+		
+		updateClassSpecificValues();
 	}
 	
 	function saveData(){
@@ -807,6 +860,9 @@ function buildCalculator(containerEle, options){
 	//Restore data?
 	if (options?.cfg){
 		restoreData(cfg.data, cfg.name);
+	}else{
+		updateClassSpecificValues();
+		clearCalculation();
 	}
 	//Add some DEMO values?
 	if (options?.addDemoContent){
