@@ -415,11 +415,16 @@ html.dark .section.info-box {
 .group input {
 	width: 76px;
 }
-.group input.highlight {
+.group .highlight {
 	border: 2px solid;
 	border-color: #000;
 }
-html.dark input.highlight {
+.group input:disabled {
+	border: unset !important;
+	appearance: none;
+	-moz-appearance: textfield;
+}
+html.dark .highlight {
 	border-color: #D2C8AE;
 }
 .group input.highlight.border-col-base {

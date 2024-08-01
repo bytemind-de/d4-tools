@@ -438,7 +438,7 @@ function plotBarChart(graphEle, xStart, xEnd, data, title){
 	});
 }
 
-function addDynamicMod(parentEle, modName, className, value, disabled, stepSize, selectableTypes, preselectedTypes, searchList){
+function addDynamicMod(parentEle, modName, className, value, disabled, stepSize, selectableTypes, preselectedTypes, searchList, onChange){
 	var newAddMod = document.createElement("div");
 	newAddMod.className = "group limit-label calc-item";
 	if (disabled){
@@ -456,6 +456,7 @@ function addDynamicMod(parentEle, modName, className, value, disabled, stepSize,
 		.then(function(data){
 			var newName = data.name;
 			if (newName){
+				modName = newName;
 				newAddMod.dataset.info = newName;
 				newAddModLabelSpan.textContent = newName + ":";
 				updateSelectableType(undefined, data.entry?.types);
@@ -469,21 +470,28 @@ function addDynamicMod(parentEle, modName, className, value, disabled, stepSize,
 	}
 	newAddModInput.className = ("highlight " + className).trim();
 	newAddModInput.value = value || 0;
+	newAddModInput.addEventListener("change", function(){
+		if (onChange) onChange(getData());
+	});
 	var newAddModRemove = document.createElement("button");
 	newAddModRemove.textContent = "─";
 	newAddModRemove.title = "remove";
 	newAddModRemove.addEventListener("click", function(){
 		newAddMod.remove();
+		if (onChange) onChange({label: modName, value: null, isDisabled: true});
 	});
 	var newAddModHide = document.createElement("button");
 	newAddModHide.innerHTML = "&#128065;";
 	newAddModHide.title = "disable";
 	newAddModHide.addEventListener("click", function(){
+		var isDisabled = false;
 		if (newAddMod.classList.contains("hidden")){
 			newAddMod.classList.remove("hidden");
 		}else{
 			newAddMod.classList.add("hidden");
+			isDisabled = true;
 		}
+		if (onChange) onChange(getData());
 	});
 	var typeBoxEle;
 	var selectedTypes = preselectedTypes || [];
@@ -500,6 +508,8 @@ function addDynamicMod(parentEle, modName, className, value, disabled, stepSize,
 		//set state
 		newAddModInput.dataset.selectedTypes = JSON.stringify(newTypeSet);
 		selectedTypes = newTypeSet;
+		//event
+		if (onChange) onChange(getData());
 	}
 	if (selectableTypes){
 		newAddModInput.dataset.selectedTypes = JSON.stringify(selectedTypes);
@@ -518,6 +528,14 @@ function addDynamicMod(parentEle, modName, className, value, disabled, stepSize,
 				updateSelectableType(formData, []);
 			});
 		});
+	}
+	var getData = function(){
+		return {
+			label: modName,
+			value: newAddModInput.value,
+			isDisabled: newAddMod.classList.contains("hidden"),
+			selectedTypes: selectedTypes
+		};
 	}
 	newAddMod.appendChild(newAddModLabel);
 	if (typeBoxEle) newAddMod.appendChild(typeBoxEle);
@@ -543,10 +561,13 @@ function addDynamicModPromptPromise(initValue, promptText, searchList, selectabl
 				}
 			}; */
 			var selectOptions = [{name: "- Select (BETA) -", value: ""}];
+			var charClassFilter = ("getCharClass" in window)? getCharClass() : "";
 			searchList.forEach(function(itm){
-				selectOptions.push({
-					name: itm.label, group: itm.group, value: JSON.stringify(itm)
-				});
+				if (!charClassFilter || !itm.group || itm.group == "All" || itm.group == charClassFilter){
+					selectOptions.push({
+						name: itm.label, group: itm.group, value: JSON.stringify(itm)
+					});
+				}
 			});
 			selectElement = {
 				options: selectOptions,
