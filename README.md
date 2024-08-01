@@ -56,11 +56,12 @@ URL: https://bytemind-de.github.io/apps/d4/defense.html
 
 **Typical questions** to answer with this calculator:
 - _What is my 'effective' life when defending vs bleeding enemies that do physical damage in close range?_
-- _What is better with my current gear, 4% more life from a ruby or 3% damage reduction from a sapphire?_
+- _What is better with my current gear, 4% more life or 3% damage reduction?_
 
 ### Ideas to improve it
 
 - Add damage groups to be able to calculate defense for multiple attack types at the same time (close, distant, fire, poison, etc.)
+- Take dodge into account (or at least show it as well)
 - Simplify handling of rubies and paragon nodes (% life), so you don't have to enter every single one
 
 ### Known bugs / quirks
