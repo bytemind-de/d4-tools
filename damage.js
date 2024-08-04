@@ -960,22 +960,66 @@ noConImportDataSelector.addEventListener('change', function(ev){
 	const file = ev.target.files[0];
 	if (file){
 		importConfigurationFromFile(file, function(fileType, data){
-			if (fileType == "singleConfig"){
-				//create new calculator and add data
-				if (data){
-					var calc = addNewCalculator(false);
-					calc.restoreData(data);
-				}
-			}else if (fileType == "configArray"){
-				//add all configurations from file to storage
-				if (confirm("Warning: This will overwrite existing configurations with the same name! Continue?")){
-					var keepOld = true;
-					writeAllConfigsToLocalStorage(data, keepOld);
-				}
-			}
+			openCalculatorsFromData(fileType, data, false);
 		});
 	}
 });
+function openCalculatorsFromData(fileType, data, openList, calculatorNames){
+	if (fileType == "singleConfig"){
+		//create new calculator and add data
+		if (data){
+			var calc = addNewCalculator(false);
+			calc.restoreData(data);
+		}
+	}else if (fileType == "configArray"){
+		//open calculators or import?
+		if (openList){
+			//open calculators
+			if (!calculatorNames?.length){
+				//fill up with IDs
+				calculatorNames = Object.keys(data);
+			}
+			calculatorNames.forEach(calcIdOrName => {
+				var calcData = data[calcIdOrName];
+				if (!calcData){
+					calcData = Object.values(data).find(itm => itm?.name == calcIdOrName);
+				}
+				if (calcData?.calc == d4cType){
+					var calc = addNewCalculator(false);
+					calc.restoreData(calcData.data);
+				}
+			});
+		}else{
+			//add all configurations from file to storage
+			if (confirm("Warning: This will overwrite existing configurations with the same name! Continue?")){
+				var keepOld = true;
+				writeAllConfigsToLocalStorage(data, keepOld);
+			}
+		}
+	}
+}
 
-//Show a default calculator at start:
-//addNewCalculator(true, true);
+//Load calculators from file and or name?
+checkUrlFileLoad(function(fileType, data){
+	//on load
+	console.log("Got data from file:", fileType, data);
+	//what now?
+	let promptText = "A file with calculators has been loaded.\nDo you want to open/import the data?";
+	if (confirm(promptText) == true){
+		//OK
+		openCalculatorsFromData(fileType, data, false);
+	}
+	
+}, function(fileType, data, calculatorNames){
+	//on load and show selected
+	console.log("Got data from file:", fileType, data);
+	console.log("Show calculators:", calculatorNames);
+	openCalculatorsFromData(fileType, data, true, calculatorNames);
+	
+}, function(){
+	//on skip
+	console.log("Ready");
+	
+	//Show a default calculator at start:
+	//addNewCalculator(true, true);
+});
