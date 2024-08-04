@@ -34,7 +34,8 @@ function loadScript(url) {
 function loadJSON(url) {
 	return fetch(url).then(response => {
 		if (response.status != 200){
-			throw {message: response.statusText, code: response.status, response: response};
+			var msg = response.statusText || (response.status == 404? "File not found" : "");
+			throw {message: msg, code: response.status, response: response};
 		}else{
 			return response.json();
 		}
