@@ -6,6 +6,9 @@ const startUrlParams = new URLSearchParams(window.location.search);
 const urlParamColorScheme = startUrlParams.get('color');
 const urlParamSingleColumn = startUrlParams.get('singleColumn');
 const urlParamDetailedInfo = startUrlParams.get('detailedInfo');
+const urlParamLoadFile = startUrlParams.get('loadFile');
+const urlParamShowFile = startUrlParams.get('showFile');
+const urlParamLoadCalc = startUrlParams.get('loadCalc');
 
 function updateUrlParameter(key, value, reloadPage){
 	var currentUrl = new URL(window.location.href);
@@ -26,6 +29,15 @@ function loadScript(url) {
 		script.onload = resolve;
 		script.onerror = reject;
 		document.head.appendChild(script);
+	});
+}
+function loadJSON(url) {
+	return fetch(url).then(response => {
+		if (response.status != 200){
+			throw {message: response.statusText, code: response.status, response: response};
+		}else{
+			return response.json();
+		}
 	});
 }
 async function loadScripts(urls) {
@@ -174,6 +186,10 @@ function showPopUp(content, buttons, options){
 		contentDiv.innerHTML = content;
 	}else{
 		contentDiv.appendChild(content);
+	}
+	//buttons
+	if (buttons && buttons.length){
+		//TODO: implement
 	}
 	//close function
 	var isClosed = false;
@@ -679,7 +695,7 @@ function exportAllData(){
 		configArray: readConfigsFromLocalStorage()
 	};
 	var now = (new Date()).toISOString().split(".")[0].replace(/(T|:|\.)/g, "_");
-	console.error("exportAllData", data);	//DEBUG
+	console.log("exportAllData result:", data);		//DEBUG
 	saveAs("d4-calc-all_" + now + ".json", data);
 }
 function importConfigurationFromFile(file, onDataCallback){
@@ -688,17 +704,33 @@ function importConfigurationFromFile(file, onDataCallback){
 		const content = reader.result;
 		if (content){
 			var contentJson = JSON.parse(content);
-			if (contentJson.singleConfig){
-				if (onDataCallback) onDataCallback("singleConfig", contentJson.singleConfig);
-			}else if (contentJson.configArray || contentJson.allConfigs){
-				if (onDataCallback) onDataCallback("configArray",
-					contentJson.configArray || contentJson.allConfigs);
-			}else{
-				showPopUp("Could not import data.<br>Unknown file format.");
-			}
+			importConfigurationFromJson(contentJson, onDataCallback);
 		}
 	};
 	reader.readAsText(file);
+}
+function importConfigurationFromUrl(url, onDataCallback){
+	loadJSON(url).then(json => {
+		importConfigurationFromJson(json, onDataCallback);
+	})
+	.catch(err => {
+		console.error("importConfigurationFromUrl - Failed to load JSON from URL:", url, "Error:", err);
+		if (err?.message && err.code){
+			showPopUp("Tried to load calculator(s) from URL but failed.<br>Error: " + err.message + " (" + err.code + ")");
+		}else{
+			showPopUp("Tried to load calculator(s) from URL but failed.<br>See console for detailed error.");
+		}
+	});
+}
+function importConfigurationFromJson(contentJson, onDataCallback){
+	if (contentJson?.singleConfig){
+		if (onDataCallback) onDataCallback("singleConfig", contentJson.singleConfig);
+	}else if (contentJson?.configArray || contentJson.allConfigs){
+		if (onDataCallback) onDataCallback("configArray",
+			contentJson.configArray || contentJson.allConfigs);
+	}else{
+		showPopUp("Could not import data.<br>Unknown file format.");
+	}
 }
 function createStoredCalculatorsPopUp(onSelectCallback){
 	var storedConfigs = readConfigsFromLocalStorage();
@@ -712,6 +744,7 @@ function createStoredCalculatorsPopUp(onSelectCallback){
 		content.style.cssText = "display: flex; flex-direction: column; max-height: 100%;";
 		var list = document.createElement("div");
 		list.className = "list-container";
+		var n = 0;
 		keys.forEach(function(k){
 			var cfg = storedConfigs[k];
 			//filter calc. type
@@ -746,7 +779,11 @@ function createStoredCalculatorsPopUp(onSelectCallback){
 			});
 			item.appendChild(delButton);
 			list.appendChild(item);
+			n++;
 		});
+		if (n == 0){
+			list.innerHTML = "<p>- Found no stored data for this calculator -<br><br></p>";
+		}
 		var info = document.createElement("div");
 		info.innerHTML = "<p>Choose a configuration:</p>";
 		var footer = document.createElement("div");
@@ -839,3 +876,31 @@ function clearData(){
 	localStorage.removeItem("d4-calc-data");
 }
 
+function checkUrlFileLoad(onLoadFile, onShowFile, onSkip){
+	if (urlParamLoadFile){
+		updateUrlParameter("loadFile", "", false);
+		updateUrlParameter("showFile", "", false);
+		importConfigurationFromUrl(urlParamLoadFile, function(fileType, data){
+			if (urlParamShowFile == "true" || urlParamShowFile == "1" || urlParamLoadCalc){
+				var loadCalcNames = getCalculatorNamesFromUrlParam();
+				updateUrlParameter("loadCalc", "", false);
+				onShowFile(fileType, data, loadCalcNames);
+			}else{
+				onLoadFile(fileType, data);
+			}
+		});
+	}else{
+		onSkip();
+	}
+}
+function getCalculatorNamesFromUrlParam(){
+	var loadCalcNames = undefined;
+	if (urlParamLoadCalc){
+		if (urlParamLoadCalc.trim().indexOf("[") == 0){
+			loadCalcNames = JSON.parse(urlParamLoadCalc);
+		}else{
+			loadCalcNames = [urlParamLoadCalc.trim()];
+		}
+	}
+	return loadCalcNames;
+}
