@@ -1,21 +1,28 @@
 var multiplicativeDamageLabelsList = [
 	//All
 	{label: "Aspect: ", group: "All", types: []},
+	{label: "Aspect: Adaptability", group: "All", types: []},
 	{label: "Aspect: Conceited", group: "All", types: []},
 	{label: "Aspect: Edgemasters", group: "All", types: []},
+	{label: "Aspect: Moonrise", group: "All", types: []},
+	{label: "Glyph: ", group: "All", types: []},
 	{label: "Item: ", group: "All", types: []},
 	{label: "Item: Banished Lords", group: "All", types: ["crit", "overpower"]},
 	{label: "Item: Godslayer Crown", group: "All", types: []},
 	{label: "Item: Tal Rasha's", group: "All", types: []},
 	{label: "Item: Tibaults Will", group: "All", types: []},
-	{label: "Uber Item: Ahavarion", group: "All", types: []},
-	{label: "Uber Item: Grandfather", group: "All", types: ["crit"]},
-	{label: "Uber Item: Ring of Starless Sk.", group: "All", types: []},
+	{label: "Key Pass.: ", group: "All", types: []},
+	{label: "Leg. Node: ", group: "All", types: []},
+	{label: "Mythic Unique: Ahavarion", group: "All", types: []},
+	{label: "Mythic Unique: Grandfather", group: "All", types: ["crit"]},
+	{label: "Mythic Unique: Ring of Starless Sk.", group: "All", types: []},
+	{label: "Pass.: ", group: "All", types: []},
+	{label: "Skill: ", group: "All", types: []},
+	{label: "Temper: ", group: "All", types: []},
 	//Barbarian
 	{label: "Aspect: Ancestral Force", group: "Barbarian", types: []},
 	{label: "Aspect: Earthstrikers", group: "Barbarian", types: ["overpower"]},
 	{label: "Aspect: Limitless Rage", group: "Barbarian", types: []},
-	{label: "Glyph: ", group: "Barbarian", types: []},
 	{label: "Glyph: Ambidextrous", group: "Barbarian", types: []},
 	{label: "Glyph: Brawl", group: "Barbarian", types: []},
 	{label: "Glyph: Cleaver", group: "Barbarian", types: ["crit"]},
@@ -36,12 +43,14 @@ var multiplicativeDamageLabelsList = [
 	{label: "Pass.: Cut to the Bone", group: "Barbarian", types: ["vulnerable"]},
 	{label: "Pass.: Heavy Handed", group: "Barbarian", types: ["crit"]},
 	{label: "Pass.: Pit Fighter", group: "Barbarian", types: []},
+	{label: "Pass.: Slaying Strike", group: "Barbarian", types: []},
 	{label: "Pass.: Wallop", group: "Barbarian", types: ["vulnerable"]},
 	{label: "Skill: War Cry", group: "Barbarian", types: []},
 	{label: "Skill: Wrath o.t. Berserker", group: "Barbarian", types: []},
-	{label: "Temper: ", group: "Barbarian", types: []},
+	{label: "Weapon Expertise: ", group: "Barbarian", types: []},
 	{label: "Weapon Expertise: 2h Axe", group: "Barbarian", types: ["vulnerable"]},
 	{label: "Weapon Expertise: 2h Mace", group: "Barbarian", types: ["crit"]},
+	{label: "Weapon Expertise: 2h Polearm", group: "Barbarian", types: []},
 	//Druid
 	{label: "Aspect: ", group: "Druid", types: []},
 	{label: "Glyph: ", group: "Druid", types: []},
@@ -104,8 +113,6 @@ var multiplicativeDamageLabelsList = [
 	{label: "Pass.: Icy Touch", group: "Sorc", types: ["vulnerable"]},
 	{label: "Pass.: Inner Flames", group: "Sorc", types: []},
 	{label: "Pass.: Permafrost", group: "Sorc", types: []},
-	{label: "Pass.: Shocking Impact", group: "Sorc", types: []},
-	{label: "Skill: ", group: "Sorc", types: []},
-	{label: "Temper: ", group: "Sorc", types: []}
+	{label: "Pass.: Shocking Impact", group: "Sorc", types: []}
 ]
 //TODO: add more
