@@ -501,13 +501,7 @@ function addDynamicMod(parentEle, modName, className, value, disabled, stepSize,
 	newAddModHide.innerHTML = "&#128065;";
 	newAddModHide.title = "disable";
 	newAddModHide.addEventListener("click", function(){
-		var isDisabled = false;
-		if (newAddMod.classList.contains("hidden")){
-			newAddMod.classList.remove("hidden");
-		}else{
-			newAddMod.classList.add("hidden");
-			isDisabled = true;
-		}
+		toggleDisableCalcItem(newAddMod, newAddModInput, newAddModHide, 0);
 		if (onChange) onChange(getData());
 	});
 	var typeBoxEle;
@@ -664,6 +658,34 @@ function addSelectableTypes(typeBoxEle, selectableTypes, newTypeSet){
 	});
 	if (newTypeSet.length > 3){
 		typeBoxEle.classList.add("bigger");
+	}
+}
+
+function toggleDisableCalcItem(calcItem, inputEle, toggleButton, disableStyle){
+	//disableStyle: 0=fade whole item, 1=make input look fixed
+	if (disableStyle == 1){
+		if (inputEle.disabled){
+			inputEle.disabled = false;
+			return 1;
+		}else{
+			inputEle.disabled = true;
+			return 0;
+		}
+	}else{
+		if (calcItem.classList.contains("hidden")){
+			calcItem.classList.remove("hidden");
+			return 1;
+		}else{
+			calcItem.classList.add("hidden");
+			return 0;
+		}
+	}
+}
+function setCalcItemToDisabled(calcItem, inputEle, toggleButton, disableStyle){
+	if (disableStyle == 1){
+		inputEle.disabled = true;
+	}else{
+		calcItem.classList.add("hidden");
 	}
 }
 

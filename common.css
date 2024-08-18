@@ -420,9 +420,16 @@ html.dark .section.info-box {
 	border-color: #000;
 }
 .group input:disabled {
-	border: unset !important;
+	/*border: unset !important;*/
+	border: 2px solid rgba(155, 155, 155, 0.075) !important;
 	appearance: none;
 	-moz-appearance: textfield;
+	color: currentColor;
+	background: #f8f8f8;
+	cursor: not-allowed;
+}
+html.dark input:disabled {
+	background: #303030;
 }
 html.dark .highlight {
 	border-color: #D2C8AE;

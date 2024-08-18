@@ -7,12 +7,12 @@
 	<meta name="mobile-web-app-capable" content="yes">
 	<link rel="icon" type="image/png" href="favicon.png">
 	
-	<link rel="stylesheet" href="common.css?v=0.15.0">
+	<link rel="stylesheet" href="common.css?v=0.15.1">
 	<script src="dragdrop.js"></script>
-	<script defer src="common.js?v=0.15.0"></script>
-	<script defer src="damage.js?v=0.15.0"></script>
-	<script defer src="data/additive-damage-labels.js?v=0.15.0"></script>
-	<script defer src="data/multiplicative-damage-labels.js?v=0.15.0"></script>
+	<script defer src="common.js?v=0.15.1"></script>
+	<script defer src="damage.js?v=0.15.1"></script>
+	<script defer src="data/additive-damage-labels.js?v=0.15.1"></script>
+	<script defer src="data/multiplicative-damage-labels.js?v=0.15.1"></script>
 
 	<title>D4 Damage Calculator</title>
 	<!-- open graph settings -->
@@ -35,7 +35,7 @@
 	
 	<script>
 		var d4cType = "dmgcalc";	//TODO: this is added to the storage key and can in theory be in conflict with calc name
-		var d4cVersion = "0.15.0";
+		var d4cVersion = "0.15.1";
 		var d4season = "5";
 	</script>
 </head>
@@ -113,7 +113,7 @@
 					<div class="section">
 						<div class="group calc-item" title="Your character class. Some damage values depend on your class, e.g. the main stat (since S5)." data-tooltip-id="char-class-01">
 							<label class="emphasize has-info" data-text-id="char-class-01">Character class:</label>
-							<select name="char-class" class="highlight">
+							<select name="char-class" class="highlight" data-refresh-calc="true">
 								<option value='' disabled selected>- select -</option>
 								<option value='Barbarian'>Barbarian</option>
 								<option value='Druid'>Druid</option>
@@ -127,23 +127,23 @@
 					<div class="section">
 						<div class="group calc-item" title="Damage of your weapon used to cast the skill, taken from character stats menu.">
 							<label class="emphasize has-info">Primary weapon damage:</label>
-							<input name="base-damage" class="highlight border-col-base" type="number" value="100">
+							<input name="base-damage" class="highlight border-col-base" type="number" value="100" data-refresh-calc="true">
 						</div>
 						<div class="group calc-item" title="Attack speed found in your character stats menu (includes weapon speed and boni). Will be used for DPS calculation.">
 							<label class="emphasize has-info">Total attack speed:</label>
-							<input name="attack-speed" class="highlight border-col-base" type="number" value="1.0" step="0.1">
+							<input name="attack-speed" class="highlight border-col-base" type="number" value="1.0" step="0.1" data-refresh-calc="true">
 						</div>
 					</div>
 					<div class="section">
 						<div class="group calc-item" title="Skill damage taken from skill tree description.">
 							<label class="emphasize has-info">Skill damage modifier (%):</label>
-							<input name="skill-damage" class="highlight border-col-base" type="number" value="50">
+							<input name="skill-damage" class="highlight border-col-base" type="number" value="50" data-refresh-calc="true">
 						</div>
 					</div>
 					<div class="section">
 						<div class="group calc-item" title="Your character's primary stat (strength, dexterity, ...).">
 							<label class="emphasize has-info">Main stat (str, int, dex, wil):</label>
-							<input name="main-stat" class="highlight" type="number" value="100">
+							<input name="main-stat" class="highlight" type="number" value="100" data-refresh-calc="true">
 						</div>
 						<div class="group calc-item" title="Damage bonus due to main stat value (calculated automatically for each class).">
 							<label class="emphasize has-info">Damage bonus from stat (%):</label>
@@ -152,53 +152,56 @@
 						<div class="group calc-item" title="Base and maximum life. Used for example to calculate overpower damage.">
 							<div style="margin-right: 16px;">
 								<label class="has-info">Base life:</label>
-								<input name="char-base-life" class="highlight" type="number" value="1000">
+								<input name="char-base-life" class="highlight" type="number" value="1000" data-refresh-calc="true">
 							</div>
 							<div>
 								<label class="has-info">Max. life:</label>
-								<input name="char-max-life" class="highlight" type="number" value="1500">
+								<input name="char-max-life" class="highlight" type="number" value="1500" data-refresh-calc="true">
 							</div>
 						</div>
 					</div>
 					<div class="section">
-						<div class="group calc-item" title="The fixed damage multiplier for vulnerable. If your gear has [x%] modifiers its recommended to add them in the global section below.">
-							<label class="has-info">Damage to vulnerable (fixed [x]%):</label>
-							<input name="vulnerable-damage" class="highlight border-col-vul" type="number" value="20">
+						<div class="group calc-item" title="The fixed damage multiplier for vulnerable. If your gear has [x%] modifiers its recommended to add them to the global section below.">
+							<label class="has-info">Damage to vulnerable ([x]%):</label>
+							<input name="vulnerable-damage" class="highlight border-col-vul" type="number" value="20" data-refresh-calc="true">
+							<button name="vulnerable-damage-lock" title="Unlock fixed value"><svg viewBox="0 0 330 330" style="width: 10px; fill: currentColor;"><use xlink:href="#svg-lock"></use></svg></button>
 						</div>
 						<div class="group calc-item" title="Additive damage gained from 'vulnerable damage' stats on items, paragon board etc.">
 							<label class="emphasize has-info">Additive damage ([+]%):</label>
-							<input name="vulnerable-damage-add" class="highlight border-col-vul" type="number" value="0">
+							<input name="vulnerable-damage-add" class="highlight border-col-vul" type="number" value="0" data-refresh-calc="true">
 						</div>
 					</div>
 					<div class="section">
-						<div class="group calc-item" title="The fixed base multiplier for overpower damage. If your gear has [x%] modifiers its recommended to add them in the global section below.">
-							<label class="has-info">Overpower damage (fixed [x]%):</label>
-							<input name="overpower-damage" class="highlight border-col-overp" type="number" value="50">
+						<div class="group calc-item" title="The fixed base multiplier for overpower damage. If your gear has [x%] modifiers its recommended to add them to the global section below.">
+							<label class="has-info">Overpower damage ([x]%):</label>
+							<input name="overpower-damage" class="highlight border-col-overp" type="number" value="50" data-refresh-calc="true">
+							<button name="overpower-damage-lock" title="Unlock fixed value"><svg viewBox="0 0 330 330" style="width: 10px; fill: currentColor;"><use xlink:href="#svg-lock"></use></svg></button>
 						</div>
 						<div class="group calc-item" title="Additive damage gained from 'overpower damage' stats on items, paragon board etc.">
 							<label class="emphasize has-info">Additive damage ([+]%):</label>
-							<input name="overpower-damage-add" class="highlight border-col-overp" type="number" value="0">
+							<input name="overpower-damage-add" class="highlight border-col-overp" type="number" value="0" data-refresh-calc="true">
 						</div>
 						<div class="group calc-item" title="Add a value here if you use a skill or mechanic that leads to a guaranteed overpower attack on every n-th cast. Will be used for DPS calculation.">
 							<label class="has-info">Every n-th attack will overp.:</label>
-							<input name="overpower-nth-attack" class="highlight border-col-overp" type="number" value="33">
+							<input name="overpower-nth-attack" class="highlight border-col-overp" type="number" value="33" data-refresh-calc="true">
 						</div>
 						<div class="group calc-item" title="Does the character have the ability to fortify?">
-							<label class="single flex">Character can fortify: <input name="char-is-fortified" type="checkbox"></label>
+							<label class="single flex">Character can fortify: <input name="char-is-fortified" type="checkbox" data-refresh-calc="true"></label>
 						</div>
 					</div>
 					<div class="section">
-						<div class="group calc-item" title="The fixed damage multiplier for crit. damage. If your gear has [x%] modifiers its recommended to add them in the global section below.">
-							<label class="has-info">Critical strike damage (fixed [x]%):</label>
-							<input name="critical-damage" class="highlight border-col-crit" type="number" value="50">
+						<div class="group calc-item" title="The fixed damage multiplier for crit. damage. If your gear has [x%] modifiers its recommended to add them to the global section below.">
+							<label class="has-info">Critical strike damage ([x]%):</label>
+							<input name="critical-damage" class="highlight border-col-crit" type="number" value="50" data-refresh-calc="true">
+							<button name="critical-damage-lock" title="Unlock fixed value"><svg viewBox="0 0 330 330" style="width: 10px; fill: currentColor;"><use xlink:href="#svg-lock"></use></svg></button>
 						</div>
 						<div class="group calc-item" title="Additive damage gained from 'critical damage' stats on items, paragon board etc.">
 							<label class="emphasize has-info">Additive damage ([+]%):</label>
-							<input name="critical-damage-add" class="highlight border-col-crit" type="number" value="0">
+							<input name="critical-damage-add" class="highlight border-col-crit" type="number" value="0" data-refresh-calc="true">
 						</div>
 						<div class="group calc-item" title="Critical strike chance. Used for example below to calculate an average damage per hit.">
 							<label class="emphasize has-info">Critical strike chance (%):</label>
-							<input name="critical-hit-chance" class="highlight border-col-crit" type="number" value="5">
+							<input name="critical-hit-chance" class="highlight border-col-crit" type="number" value="5" data-refresh-calc="true">
 						</div>
 					</div>
 				</div>
@@ -235,9 +238,9 @@
 				<div class="section-group">
 					<div class="section">
 						<div class="group center">
-							<label class="single flex">Vulnerable: <input name="do-calc-vulnerable" type="checkbox"></label>
-							<label class="single flex">Critical hit: <input name="do-calc-crit" type="checkbox"></label>
-							<label class="single flex">Overpower: <input name="do-calc-overpower" type="checkbox"></label>
+							<label class="single flex">Vulnerable: <input name="do-calc-vulnerable" type="checkbox" data-refresh-calc="true"></label>
+							<label class="single flex">Critical hit: <input name="do-calc-crit" type="checkbox" data-refresh-calc="true"></label>
+							<label class="single flex">Overpower: <input name="do-calc-overpower" type="checkbox" data-refresh-calc="true"></label>
 						</div>
 						<div class="group center buttons-box">
 							<button name="calculate-data-btn">CALCULATE DAMAGE</button>
@@ -275,6 +278,11 @@
 			<svg viewBox="0 0 128 128">
 				<g id="svg-swords">
 					<g transform="translate(-33.54 -6.354)"><g transform="matrix(.365 0 0 .365 41.48 14.3)"><path d="m193.3 126.8c40.83-33.22 75.86-73.17 103.5-118.2 0.598-0.975 0.419-2.236-0.426-3.006s-2.118-0.83-3.032-0.144c-9.58 7.185-24.57 17.65-39.7 25.11-19.56 9.641-40.57 13.58-51.19 15.06-4.476 0.623-8.461 3.156-10.93 6.941-5.225 8.016-15.35 23.04-28.4 39.98 6.044 7.515 12.57 15.21 19.41 22.65 3.755 4.085 7.343 7.965 10.77 11.65z"/><path d="m115.4 147.2c-17.3 18.4-29.52 30.81-36.56 37.82l-3.183-3.183c-3.906-3.904-10.24-3.904-14.14 0-3.905 3.905-3.905 10.24 0 14.14l1.405 1.405c-3.597-0.354-7.317 0.844-10.07 3.598-3.232 3.232-4.311 7.791-3.263 11.92-4.131-1.048-8.69 0.031-11.92 3.262-3.232 3.232-4.311 7.792-3.263 11.92-4.13-1.047-8.69 0.031-11.92 3.262-2.991 2.991-4.14 7.119-3.466 10.99l-1.932-1.932c-3.906-3.904-10.24-3.904-14.14 0-3.905 3.905-3.905 10.24 0 14.14l42.19 42.19c1.608 1.607 3.716 2.619 5.977 2.868l23.15 2.55c0.372 0.041 0.741 0.061 1.107 0.061 5.031 0 9.363-3.789 9.927-8.906 0.605-5.489-3.354-10.43-8.845-11.03l-19.65-2.165-14.24-14.24c0.712 0.124 1.432 0.195 2.153 0.195 3.199 0 6.398-1.221 8.839-3.661 3.232-3.232 4.311-7.791 3.263-11.92 1.011 0.257 2.046 0.399 3.083 0.399 3.199 0 6.398-1.221 8.839-3.661 3.232-3.232 4.311-7.791 3.263-11.92 1.011 0.256 2.045 0.398 3.082 0.398 3.199 0 6.398-1.221 8.839-3.661 2.755-2.755 3.953-6.475 3.599-10.07l2.814 2.814 2.166 19.65c0.563 5.118 4.895 8.906 9.927 8.906 0.366 0 0.735-0.02 1.107-0.061 5.49-0.605 9.45-5.545 8.845-11.03l-2.55-23.14c-0.249-2.261-1.261-4.368-2.868-5.977l-5.84-5.84 41.01-41.01c-9.115-6.05-18.02-12.42-26.71-19.08z"/><path d="m304.2 240.4c-3.906-3.904-10.24-3.904-14.14 0l-1.932 1.932c0.674-3.873-0.475-8.001-3.466-10.99-3.232-3.232-7.79-4.31-11.92-3.262 1.048-4.131-0.03-8.691-3.262-11.92-3.232-3.232-7.79-4.31-11.92-3.263 1.047-4.13-0.031-8.689-3.263-11.92-1.167-1.167-2.512-2.048-3.943-2.657-1.946-0.828-4.057-1.146-6.13-0.941l1.406-1.406c3.905-3.905 3.905-10.24 0-14.14-3.906-3.904-10.24-3.904-14.14 0l-3.183 3.183c-9.534-9.492-28.57-28.88-56.84-59.64-25.94-28.22-47.36-59.76-55.86-72.79-2.468-3.786-6.453-6.319-10.93-6.942-10.62-1.478-31.63-5.414-51.19-15.06-15.13-7.456-30.12-17.92-39.7-25.11-0.425-0.319-0.927-0.476-1.428-0.476-0.577 0-1.152 0.209-1.604 0.621-0.845 0.77-1.024 2.031-0.426 3.006 36.37 59.3 85.52 109.7 143.8 147.7l2.486 1.615 49.38 49.38-5.84 5.84c-1.607 1.608-2.619 3.716-2.868 5.977l-0.068 0.62-2.481 22.53c-0.606 5.489 3.354 10.43 8.845 11.03 0.372 0.041 0.741 0.061 1.107 0.061 5.031 0 9.363-3.788 9.927-8.906l1.29-11.71 4.632-4.632c0.609 1.431 1.489 2.775 2.656 3.942 2.44 2.44 5.64 3.661 8.839 3.661 1.037 0 2.072-0.142 3.083-0.399-1.048 4.131 0.03 8.69 3.262 11.92 2.441 2.441 5.64 3.661 8.839 3.661 1.037 0 2.071-0.142 3.082-0.398-1.048 4.13 0.031 8.689 3.263 11.92 2.44 2.44 5.64 3.661 8.839 3.661 0.721 0 1.441-0.071 2.154-0.195l-14.24 14.24-19.65 2.165c-5.49 0.604-9.45 5.545-8.845 11.03 0.563 5.118 4.895 8.906 9.927 8.906 0.366 0 0.735-0.021 1.107-0.061l23.15-2.55c2.261-0.249 4.368-1.261 5.977-2.868l42.19-42.19c3.904-3.906 3.904-10.24-1e-3 -14.14z"/></g></g>
+				</g>
+			</svg>
+			<svg viewBox="0 0 330 330">
+				<g id="svg-lock">
+					<g><path id="XMLID_510_" d="M65,330h200c8.284,0,15-6.716,15-15V145c0-8.284-6.716-15-15-15h-15V85c0-46.869-38.131-85-85-85 S80,38.131,80,85v45H65c-8.284,0-15,6.716-15,15v170C50,323.284,56.716,330,65,330z M180,234.986V255c0,8.284-6.716,15-15,15 s-15-6.716-15-15v-20.014c-6.068-4.565-10-11.824-10-19.986c0-13.785,11.215-25,25-25s25,11.215,25,25 C190,223.162,186.068,230.421,180,234.986z M110,85c0-30.327,24.673-55,55-55s55,24.673,55,55v45H110V85z"></path></g>
 				</g>
 			</svg>
 		</div>

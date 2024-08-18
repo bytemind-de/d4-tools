@@ -42,7 +42,7 @@ function buildCalculator(containerEle, options){
 	var charClassEle = containerEle.querySelector("[name=char-class]");
 	charClassEle?.addEventListener("change", function(){
 		updateClassSpecificValues();
-		disableCalculationBox();
+		//disableCalculationBox();	//NOTE: done with global change listener now
 	});
 	getCharClass = function(){ return charClassEle?.value || ""; };
 	
@@ -57,14 +57,27 @@ function buildCalculator(containerEle, options){
 	var baseLifeEle = containerEle.querySelector("[name=char-base-life]");
 	var maxLifeEle = containerEle.querySelector("[name=char-max-life]");
 	var vulnerableDamageEle = containerEle.querySelector("[name=vulnerable-damage]");
+	var vulnerableDamageLockEle = containerEle.querySelector("[name=vulnerable-damage-lock]");
+	vulnerableDamageLockEle.addEventListener("click", function(){
+		toggleDisableCalcItem(vulnerableDamageEle.parentElement, vulnerableDamageEle, vulnerableDamageLockEle, 1);
+	});
+	setCalcItemToDisabled(vulnerableDamageEle.parentElement, vulnerableDamageEle, vulnerableDamageLockEle, 1);
 	var vulnerableDamageAddEle = containerEle.querySelector("[name=vulnerable-damage-add]");
 	var overpowerDamageEle = containerEle.querySelector("[name=overpower-damage]");
+	var overpowerDamageLockEle = containerEle.querySelector("[name=overpower-damage-lock]");
+	overpowerDamageLockEle.addEventListener("click", function(){
+		toggleDisableCalcItem(overpowerDamageEle.parentElement, overpowerDamageEle, overpowerDamageLockEle, 1);
+	});
+	setCalcItemToDisabled(overpowerDamageEle.parentElement, overpowerDamageEle, overpowerDamageLockEle, 1);
 	var overpowerDamageAddEle = containerEle.querySelector("[name=overpower-damage-add]");
 	var overpowerOnNthAttackEle = containerEle.querySelector("[name=overpower-nth-attack]");
 	var isFortified = containerEle.querySelector("[name=char-is-fortified]");
-	isFortified.addEventListener("click", function(){
-		disableCalculationBox(); });
 	var critDamageEle = containerEle.querySelector("[name=critical-damage]");
+	var critDamageLockEle = containerEle.querySelector("[name=critical-damage-lock]");
+	critDamageLockEle.addEventListener("click", function(){
+		toggleDisableCalcItem(critDamageEle.parentElement, critDamageEle, critDamageLockEle, 1);
+	});
+	setCalcItemToDisabled(critDamageEle.parentElement, critDamageEle, critDamageLockEle, 1);
 	var critDamageAddEle = containerEle.querySelector("[name=critical-damage-add]");
 	var critChanceEle = containerEle.querySelector("[name=critical-hit-chance]");
 	
@@ -83,12 +96,13 @@ function buildCalculator(containerEle, options){
 	var doCalcCrit = containerEle.querySelector("[name=do-calc-crit]");
 	var doCalcVulnerable = containerEle.querySelector("[name=do-calc-vulnerable]");
 	var doCalcOverpower = containerEle.querySelector("[name=do-calc-overpower]");
-	doCalcVulnerable.addEventListener("click", function(){
-		disableCalculationBox(); });
-	doCalcCrit.addEventListener("click", function(){
-		disableCalculationBox(); });
-	doCalcOverpower.addEventListener("click", function(){
-		disableCalculationBox(); });
+	
+	//set refresh listeners
+	containerEle.querySelectorAll('[data-refresh-calc="true"]').forEach(function(ele){
+		ele.addEventListener("change", function(){
+			disableCalculationBox();
+		});
+	});	
 	
 	var saveBtn = containerEle.querySelector("[name=save-btn]");
 	var loadBtn = containerEle.querySelector("[name=load-btn]");
