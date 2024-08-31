@@ -17,7 +17,6 @@ var classSpecificValues = {
 	"Sorc": {},
 	"Spiritborn": {}
 }
-var getCharClass = function(){ return ""; };	//NOTE: set inside 'buildCalculator'
 	
 function buildCalculator(containerEle, options){
 	var Calculator = {
@@ -31,7 +30,7 @@ function buildCalculator(containerEle, options){
 	charClassEle?.addEventListener("change", function(){
 		disableCalculationBox();
 	});
-	getCharClass = function(){ return charClassEle?.value || ""; };
+	var getCharClass = function(){ return charClassEle?.value || ""; };
 
 	var baseLifeEle = containerEle.querySelector("[name=char-base-life]");
 	var strengthEle = containerEle.querySelector("[name=char-strength]");
@@ -96,7 +95,7 @@ function buildCalculator(containerEle, options){
 		//if (!modName) return;
 		//addDynamicMod(armorItemsContainer, modName, "border-col-armor", startValue, isDisabled, 1.0, undefined, selectedTypes, flatArmorLabelsList, onModUpdate);
 		Promise.resolve(newName? {name: newName} : addDynamicModPromptPromise("", "Enter a name for this value:",
-			flatArmorLabelsList, undefined, selectedTypes))
+			flatArmorLabelsList, undefined, selectedTypes, getCharClass()))
 		.then(function(data){
 			var modName = data.name;
 			if (modName){
@@ -110,7 +109,7 @@ function buildCalculator(containerEle, options){
 		//if (!modName) return;
 		//addDynamicMod(armorPctContainer, modName, "border-col-armor", startValue, isDisabled, 0.1, undefined, selectedTypes, pctArmorLabelsList, onModUpdate);
 		Promise.resolve(newName? {name: newName} : addDynamicModPromptPromise("", "Enter a name for this '%' modifier:",
-			pctArmorLabelsList, undefined, selectedTypes))
+			pctArmorLabelsList, undefined, selectedTypes, getCharClass()))
 		.then(function(data){
 			var modName = data.name;
 			if (modName){
@@ -124,7 +123,7 @@ function buildCalculator(containerEle, options){
 		//if (!modName) return;
 		//addDynamicMod(maxlifeItemsContainer, modName, "border-col-life", startValue, isDisabled, 1.0, undefined, selectedTypes, flatLifeLabelsList, onModUpdate);
 		Promise.resolve(newName? {name: newName} : addDynamicModPromptPromise("", "Enter a name for this value:",
-			flatLifeLabelsList, undefined, selectedTypes))
+			flatLifeLabelsList, undefined, selectedTypes, getCharClass()))
 		.then(function(data){
 			var modName = data.name;
 			if (modName){
@@ -138,7 +137,7 @@ function buildCalculator(containerEle, options){
 		//if (!modName) return;
 		//addDynamicMod(maxlifePctContainer, modName, "border-col-life", startValue, isDisabled, 0.1, undefined, selectedTypes, pctLifeLabelsList, onModUpdate);
 		Promise.resolve(newName? {name: newName} : addDynamicModPromptPromise("", "Enter a name for this '%' modifier:",
-			pctLifeLabelsList, undefined, selectedTypes))
+			pctLifeLabelsList, undefined, selectedTypes, getCharClass()))
 		.then(function(data){
 			var modName = data.name;
 			if (modName){
@@ -152,7 +151,7 @@ function buildCalculator(containerEle, options){
 		//if (!modName) return;
 		//addDynamicMod(drValuesContainer, modName, "reduction-mod-val", startValue, isDisabled, 0.1, undefined, selectedTypes, damageReductionLabelsList, onModUpdate);
 		Promise.resolve(newName? {name: newName} : addDynamicModPromptPromise("", "Enter a name for this damage reduction modifier:",
-			damageReductionLabelsList, undefined, selectedTypes))
+			damageReductionLabelsList, undefined, selectedTypes, getCharClass()))
 		.then(function(data){
 			var modName = data.name;
 			if (modName){
@@ -166,7 +165,7 @@ function buildCalculator(containerEle, options){
 		//if (!modName) return;
 		//addDynamicMod(penaltyValuesContainer, modName, "penalty-mod-val", startValue, isDisabled, 0.1, undefined, selectedTypes, pctMoreDamageTakenLabelsList, onModUpdate);
 		Promise.resolve(newName? {name: newName} : addDynamicModPromptPromise("", "Enter a name for this penalty modifier:",
-			pctMoreDamageTakenLabelsList, undefined, selectedTypes))
+			pctMoreDamageTakenLabelsList, undefined, selectedTypes, getCharClass()))
 		.then(function(data){
 			var modName = data.name;
 			if (modName){

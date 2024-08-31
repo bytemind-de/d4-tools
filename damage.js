@@ -29,7 +29,6 @@ var classSpecificValues = {
 	"Sorc": {mainStatScaling: 8},
 	"Spiritborn": {mainStatScaling: 8}
 }
-var getCharClass = function(){ return ""; };	//NOTE: set inside 'buildCalculator'
 
 function buildCalculator(containerEle, options){
 	var Calculator = {
@@ -44,7 +43,7 @@ function buildCalculator(containerEle, options){
 		updateClassSpecificValues();
 		//disableCalculationBox();	//NOTE: done with global change listener now
 	});
-	getCharClass = function(){ return charClassEle?.value || ""; };
+	var getCharClass = function(){ return charClassEle?.value || ""; };
 	
 	var baseDamageEle = containerEle.querySelector("[name=base-damage]");
 	var attackSpeedEle = containerEle.querySelector("[name=attack-speed]");
@@ -139,7 +138,7 @@ function buildCalculator(containerEle, options){
 	function addAdditiveMod(newName, startValue, isDisabled, selectedTypes){
 		//var modName = newName || prompt("Enter a name for this '+' modifier:");
 		Promise.resolve(newName? {name: newName} : addDynamicModPromptPromise("", "Enter a name for this '+' modifier:",
-			additiveDamageLabelsList, selectableDamageTypes, selectedTypes))
+			additiveDamageLabelsList, selectableDamageTypes, selectedTypes, getCharClass()))
 		.then(function(data){
 			var modName = data.name;
 			if (modName){
@@ -151,7 +150,7 @@ function buildCalculator(containerEle, options){
 	function addMultiplierMod(newName, startValue, isDisabled, selectedTypes){
 		//var modName = newName || prompt("Enter a name for this '×' modifier:");
 		Promise.resolve(newName? {name: newName} : addDynamicModPromptPromise("", "Enter a name for this '×' modifier:",
-			multiplicativeDamageLabelsList, selectableDamageTypes, selectedTypes))
+			multiplicativeDamageLabelsList, selectableDamageTypes, selectedTypes, getCharClass()))
 		.then(function(data){
 			var modName = data.name;
 			if (modName){
@@ -162,7 +161,8 @@ function buildCalculator(containerEle, options){
 	}
 	function addReductionMod(newName, startValue, isDisabled, selectedTypes){
 		//var modName = newName || prompt("Enter a name for this damage reduction modifier:");
-		Promise.resolve(newName? {name: newName} : addDynamicModPromptPromise("", "Enter a name for this damage reduction modifier:"))
+		Promise.resolve(newName? {name: newName} : addDynamicModPromptPromise("", "Enter a name for this damage reduction modifier:",
+			undefined, undefined, undefined, getCharClass()))
 		.then(function(data){
 			var modName = data.name;
 			if (modName){
