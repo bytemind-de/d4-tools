@@ -22,13 +22,14 @@ var selectableDamageTypes = [
 ];
 
 var classSpecificValues = {
-	"Barb": {mainStatScaling: 10},
-	"Druid": {mainStatScaling: 8},
-	"Necro": {mainStatScaling: 8},
-	"Rogue": {mainStatScaling: 9},
-	"Sorc": {mainStatScaling: 8},
-	"Spiritborn": {mainStatScaling: 8}
+	"Barbarian": {mainStatScaling: 5},
+	"Druid": {mainStatScaling: 4},
+	"Necro": {mainStatScaling: 4},
+	"Rogue": {mainStatScaling: 4.5},
+	"Sorc": {mainStatScaling: 4},
+	"Spiritborn": {mainStatScaling: 4}
 }
+var defaultMainStatScaling = 5;
 
 function buildCalculator(containerEle, options){
 	var Calculator = {
@@ -251,7 +252,7 @@ function buildCalculator(containerEle, options){
 	}
 	
 	function updateClassSpecificValues(){
-		var mainStatScaling = (classSpecificValues[getCharClass()] || {}).mainStatScaling || 10;
+		var mainStatScaling = (classSpecificValues[getCharClass()] || {}).mainStatScaling || defaultMainStatScaling;
 		mainStatDmgEle.value = (mainStatEle.value / mainStatScaling).toFixed(1);
 	}
 	
@@ -767,12 +768,12 @@ function buildCalculator(containerEle, options){
 		clearCalculation();
 		
 		if (charClassEle) charClassEle.value = data.charClass || "";
-		baseDamageEle.value = data.baseDamage || 100;
+		baseDamageEle.value = data.baseDamage || 596;
 		attackSpeedEle.value = data.attackSpeed || 1.0;
 		skillDamageEle.value = data.skillDamage || 50;
-		mainStatEle.value = data.mainStat || 100;
-		baseLifeEle.value = data.baseLife || 100;
-		maxLifeEle.value = data.maxLife || 150;
+		mainStatEle.value = data.mainStat || 1500;
+		baseLifeEle.value = data.baseLife || 400;
+		maxLifeEle.value = data.maxLife || 3000;
 		isFortified.checked = data.isFortified;
 		vulnerableDamageEle.value = data.vulnerableDamage || 20;
 		vulnerableDamageAddEle.value = data.vulnerableDamageAdd || 0;
@@ -884,9 +885,9 @@ function buildCalculator(containerEle, options){
 		addAdditiveMod("Example: Damage on Monday", 69);
 		addMultiplierMod("Example: Crit. Bonus", 18, false, ["crit"]);
 		addMultiplierMod("Example: Tibaults Will", 40);
-		addReductionMod("Character lvl. damage reduction", 75);
+		addReductionMod("Character lvl. damage reduction", 97);
 	}else if (!options?.cfg && options?.addDemoContent !== false){
-		addReductionMod("Character lvl. damage reduction", 75);
+		addReductionMod("Character lvl. damage reduction", 97);
 	}
 	//Show/hide footer?
 	if (!options?.showFooter){

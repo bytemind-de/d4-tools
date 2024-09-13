@@ -7,12 +7,12 @@
 	<meta name="mobile-web-app-capable" content="yes">
 	<link rel="icon" type="image/png" href="favicon.png">
 	
-	<link rel="stylesheet" href="common.css?v=0.15.1">
+	<link rel="stylesheet" href="common.css?v=0.16.0">
 	<script src="dragdrop.js"></script>
-	<script defer src="common.js?v=0.15.1"></script>
-	<script defer src="damage.js?v=0.15.1"></script>
-	<script defer src="data/additive-damage-labels.js?v=0.15.1"></script>
-	<script defer src="data/multiplicative-damage-labels.js?v=0.15.1"></script>
+	<script defer src="common.js?v=0.16.0"></script>
+	<script defer src="damage.js?v=0.16.0"></script>
+	<script defer src="data/additive-damage-labels.js?v=0.16.0"></script>
+	<script defer src="data/multiplicative-damage-labels.js?v=0.16.0"></script>
 
 	<title>D4 Damage Calculator</title>
 	<!-- open graph settings -->
@@ -35,8 +35,8 @@
 	
 	<script>
 		var d4cType = "dmgcalc";	//TODO: this is added to the storage key and can in theory be in conflict with calc name
-		var d4cVersion = "0.15.1";
-		var d4season = "5";
+		var d4cVersion = "0.16.0";
+		var d4season = "6";
 	</script>
 </head>
 <body>
@@ -120,14 +120,14 @@
 								<option value='Necro'>Necromancer</option>
 								<option value='Rogue'>Rogue</option>
 								<option value='Sorc'>Sorcerer</option>
-								<!--<option value='Spiritborn'>Spiritborn</option>-->
+								<option value='Spiritborn'>Spiritborn</option>
 							</select>
 						</div>
 					</div>
 					<div class="section">
 						<div class="group calc-item" title="Damage of your weapon used to cast the skill, taken from character stats menu.">
 							<label class="emphasize has-info">Primary weapon damage:</label>
-							<input name="base-damage" class="highlight border-col-base" type="number" value="100" data-refresh-calc="true">
+							<input name="base-damage" class="highlight border-col-base" type="number" value="596" data-refresh-calc="true">
 						</div>
 						<div class="group calc-item" title="Attack speed found in your character stats menu (includes weapon speed and boni). Will be used for DPS calculation.">
 							<label class="emphasize has-info">Total attack speed:</label>
@@ -143,7 +143,7 @@
 					<div class="section">
 						<div class="group calc-item" title="Your character's primary stat (strength, dexterity, ...).">
 							<label class="emphasize has-info">Main stat (str, int, dex, wil):</label>
-							<input name="main-stat" class="highlight" type="number" value="100" data-refresh-calc="true">
+							<input name="main-stat" class="highlight" type="number" value="1500" data-refresh-calc="true">
 						</div>
 						<div class="group calc-item" title="Damage bonus due to main stat value (calculated automatically for each class).">
 							<label class="emphasize has-info">Damage bonus from stat (%):</label>
@@ -152,11 +152,11 @@
 						<div class="group calc-item" title="Base and maximum life. Used for example to calculate overpower damage.">
 							<div style="margin-right: 16px;">
 								<label class="has-info">Base life:</label>
-								<input name="char-base-life" class="highlight" type="number" value="1000" data-refresh-calc="true">
+								<input name="char-base-life" class="highlight" type="number" value="400" data-refresh-calc="true">
 							</div>
 							<div>
 								<label class="has-info">Max. life:</label>
-								<input name="char-max-life" class="highlight" type="number" value="1500" data-refresh-calc="true">
+								<input name="char-max-life" class="highlight" type="number" value="3000" data-refresh-calc="true">
 							</div>
 						</div>
 					</div>
@@ -227,8 +227,8 @@
 				</div>
 				<div class="section-group">
 					<div class="section">
-						<p class="heading has-info" title="Any other multipliers that reduce your damage. The most important value is the one based on your own character level (see in-game level tool tip, lvl. 100 => 75%)."
-							>Enemy damage reduction ([×]%):</p>
+						<p class="heading has-info" title="Any other multipliers that reduce your damage. The most important value is the one based on your own character level (see in-game level tool tip, lvl. 60 => 97%)."
+							>Damage reduction ([×]%):</p>
 						<div name="reduction-modifiers-container" class="modifiers-container"></div>
 						<div class="group right">
 							<button class="button-bold" name="reduction-modifier-btn" title="Add new modifier">+</button>
