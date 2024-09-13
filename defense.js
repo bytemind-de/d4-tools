@@ -322,7 +322,7 @@ function buildCalculator(containerEle, options){
 				return (totalAr + item.armor);
 			}
 		}, 0);
-		baseArmor += data.strength;
+		baseArmor += calculateArmorFromStrength(data.strength);
 		addResult("Base armor", baseArmor, undefined, armorItemColor, "Base armor resulting from gear, gems, strength and paragon etc.");
 		var totalArmor = data.armorModifiers.reduce(function(totalAr, item){
 			if (item.disabled) return totalAr;
@@ -335,11 +335,11 @@ function buildCalculator(containerEle, options){
 		}, baseArmor);
 		addResult("Total armor", totalArmor, undefined, armorItemColor, "Total armor including all modifiers.");
 		var physicalDrFromArmor = Math.min(0.85, calculateArmorDr(totalArmor, data.enemyLevel));
-		addResult("Physical DR vs lvl " + data.enemyLevel + " monsters", Math.round(physicalDrFromArmor * 100).toLocaleString() + "%",
+		addResult("Physical DR from armor", Math.round(physicalDrFromArmor * 100).toLocaleString() + "%",
 				undefined, armorItemColor, "Physical damage reduction based on total armor and enemy level.");
 		var armorDiffToCap = calculateMissingOrExcessArmor(totalArmor, data.enemyLevel);
-		addResult("Armor required for 85% cap", "approx. " + Math.round(armorDiffToCap).toLocaleString(),
-				undefined, armorItemColorAlt, "Approx. armor required to reach 85% DR cap vs given monster level.\nBased on S4 cap and findings and formula by SkyLineOW.", true);
+		addResult("Armor required for 85% cap", "" + Math.round(armorDiffToCap).toLocaleString(),
+				undefined, armorItemColorAlt, "Approx. add. armor required to reach 85% DR cap.", true);
 		addCustom("<hr>", "flat");
 		
 		//life
@@ -405,10 +405,20 @@ function buildCalculator(containerEle, options){
 			"Effective life against physical attacks with all defense properties applied.");
 	}
 	
+	function calculateArmorFromStrength(strength){
+		return strength/5;
+	}
 	function calculateArmorDr(playerArmor, monsterLevel){
+		//season 6 armor cap is 1000 now
+		if (playerArmor >= 1000) return 0.85;
+		else{
+			//TODO: Season 6 rough first guess - fix as soon there is data
+			return (playerArmor/1000 * 0.85);
+		}
+		/*
 		//season 4 armor cap is 9230
 		if (playerArmor >= 9230) return 0.85;
-		//Reference by SkyLineOW:
+		//Reference by SkyLineOW for pre season 6 versions:
 		//https://www.reddit.com/r/Diablo/comments/152gd9u/i_mostly_cracked_the_d4_armor_formula_and_made_a/
 		var w0 = 24.95675343;
 		var w1 = 1.57703526;
@@ -421,8 +431,12 @@ function buildCalculator(containerEle, options){
 		var slope =  w1 / monsterLevel;
 		var corr = Math.max(0, (monsterLevel - w4) / w5) ** w6;
 		return (((diff * w2) ** w3 * slope) + corr) / 100;
+		*/
 	}
 	function calculateMissingOrExcessArmor(initArmor, monsterLevel, lastArmor, searchDir){
+		//TODO: fix for season 6
+		return Math.max(0, 1000 - initArmor);
+		/*
 		//brute force search for best armor
 		if (lastArmor == undefined) lastArmor = initArmor;
 		var thisDr = calculateArmorDr(lastArmor, monsterLevel);
@@ -439,6 +453,7 @@ function buildCalculator(containerEle, options){
 		}else{
 			return lastArmor;
 		}
+		*/
 	}
 	
 	function getData(){
@@ -463,7 +478,7 @@ function buildCalculator(containerEle, options){
 		clearCalculation();
 		
 		if (charClassEle) charClassEle.value = data.charClass || "";
-		baseLifeEle.value = data.baseLife || 5000;
+		baseLifeEle.value = data.baseLife || 400;
 		strengthEle.value = data.strength || 1;
 		elementalResisEle.value = data.elementalResisSingle || 0;
 		isFortified.checked = data.isFortified;
@@ -583,24 +598,26 @@ function buildCalculator(containerEle, options){
 	}
 	//Add some DEMO values?
 	if (options?.addDemoContent){
-		addArmorItem("Helm", 1156);
-		addArmorItem("Chest", 1619);
-		addArmorItem("Gloves", 462);
-		addArmorItem("Pants", 925);
+		addArmorItem("Helm", 100);
+		addArmorItem("Chest", 140);
+		addArmorItem("Gloves", 40);
+		addArmorItem("Pants", 80);
 		addArmorPctValue("Helm", 15);
 		addMaxlifeItem("Helm", 0);
-		addMaxlifeItem("Chest", 1159);
+		addMaxlifeItem("Chest", 890);
 		addMaxlifeItem("Gloves", 0);
-		addMaxlifeItem("Pants", 1159);
+		addMaxlifeItem("Pants", 662);
 		addMaxlifeItem("Boots", 0);
 		addMaxlifeItem("Amulet", 0);
-		addMaxlifeItem("Ring", 1310);
-		addMaxlifeItem("Ring", 1310);
+		addMaxlifeItem("Ring", 662);
+		addMaxlifeItem("Ring", 0);
 		addMaxlifeItem("Weapons", 0);
-		addMaxlifePctValue("Ruby", 6);
-		addMaxlifePctValue("Ruby", 6);
-		addMaxlifePctValue("Ruby", 6);
+		//addMaxlifePctValue("Ruby", 6);
+		//addMaxlifePctValue("Ruby", 6);
+		//addMaxlifePctValue("Ruby", 6);
 		addMaxlifePctValue("Paragon Node", 4);
+		addMaxlifePctValue("Paragon Node", 4);
+		addMaxlifePctValue("Paragon Node", 2);
 		addMaxlifePctValue("Paragon Node", 2);
 		addMaxlifePctValue("Paragon Node", 2);
 		addDrPctValue("DR vs All", 10);

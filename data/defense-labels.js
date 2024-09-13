@@ -33,7 +33,7 @@ var pctLifeLabelsList = [
 	{label: "Item: ", group: "", types: []},
 	{label: "Paragon Node", group: "", types: []},
 	{label: "Passive: ", group: "", types: []},
-	{label: "Ruby", group: "", types: []},
+	//{label: "Ruby", group: "", types: []},
 	{label: "Temper: ", group: "", types: []}
 ];
 var damageReductionLabelsList = [
