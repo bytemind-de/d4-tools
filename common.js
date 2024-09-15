@@ -77,6 +77,7 @@ function loadVisLib(finishedCallback, errorCallback){
 var mainView = document.body.querySelector(".main-view");
 var mainHeadline = document.getElementById("main-headline");
 var d4IconSvg = document.getElementById("d4-icon");
+var navMenu = document.body.querySelector(".nav-menu");
 var optionsMenu = document.body.querySelector(".options-menu");
 var contentPage = mainView.querySelector(".content-page");		//TODO: I think this is actually the only global var used outside
 
@@ -99,9 +100,18 @@ if (optionDetailedInfo.checked){
 	contentPage.classList.add("hide-damage-details");
 }
 
+function toggleNavMenu(){
+	if (navMenu.classList.contains("hidden")){
+		navMenu.classList.remove("hidden");
+		optionsMenu.classList.add("hidden");
+	}else{
+		navMenu.classList.add("hidden");
+	}
+}
 function toggleOptionsMenu(){
 	if (optionsMenu.classList.contains("hidden")){
 		optionsMenu.classList.remove("hidden");
+		navMenu.classList.add("hidden");
 	}else{
 		optionsMenu.classList.add("hidden");
 	}

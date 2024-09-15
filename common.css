@@ -61,7 +61,8 @@ html.dark .main-header {
 html.dark #d4-icon {
 	color: #EBE9E8;
 }
-.options-menu {
+.options-menu,
+.nav-menu {
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -78,10 +79,15 @@ html.dark #d4-icon {
 	z-index: 100;
 	box-shadow: 1px 2px 3px 1px #00000030;
 }
-.options-menu.hidden {
+.nav-menu {
+	width: auto;
+}
+.options-menu.hidden,
+.nav-menu.hidden {
 	display: none;
 }
-html.dark .options-menu {
+html.dark .options-menu,
+html.dark .nav-menu {
 	color: #E3DAC3;
 	border-color: #d2c8ae;
 	box-shadow: inset 0 0 4px 2px #ffce4f4d, 1px 1px 2px 1px #fbd57236;
@@ -129,6 +135,12 @@ html.dark .content-page .no-content-menu {
 }
 .content-page .no-content-menu .nc-menu-section.info-text.centered {
 	text-align: center;
+}
+.nav-menu .group {
+	display: flex;
+}
+.nav-menu .group a {
+	flex: 1 1 auto !important;
 }
 
 hr {
