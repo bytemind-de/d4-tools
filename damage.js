@@ -22,14 +22,14 @@ var selectableDamageTypes = [
 ];
 
 var classSpecificValues = {
-	"Barbarian": {mainStatScaling: 5},
-	"Druid": {mainStatScaling: 4},
-	"Necro": {mainStatScaling: 4},
-	"Rogue": {mainStatScaling: 4.5},
-	"Sorc": {mainStatScaling: 4},
-	"Spiritborn": {mainStatScaling: 4}
+	"Barbarian": {mainStatScaling: 10},
+	"Druid": {mainStatScaling: 8},
+	"Necro": {mainStatScaling: 8},
+	"Rogue": {mainStatScaling: 9},
+	"Sorc": {mainStatScaling: 8},
+	"Spiritborn": {mainStatScaling: 8}
 }
-var defaultMainStatScaling = 5;
+var defaultMainStatScaling = 10;
 
 function buildCalculator(containerEle, options){
 	var Calculator = {
