@@ -566,7 +566,7 @@ function addDynamicMod(parentEle, modName, className, value, disabled, stepSize,
 	parentEle.appendChild(newAddMod);
 	bytemind.dragdrop.addMoveHandler(newAddMod, parentEle, newAddModLabel);
 }
-function addDynamicModPromptPromise(initValue, promptText, searchList, selectableTypes, selectedTypes){
+function addDynamicModPromptPromise(initValue, promptText, searchList, selectableTypes, selectedTypes, charClassFilter){
 	//Prompt to input name for new item and optionally select types
 	return new Promise((resolve) => {
 		var formPopUp;
@@ -582,7 +582,6 @@ function addDynamicModPromptPromise(initValue, promptText, searchList, selectabl
 				}
 			}; */
 			var selectOptions = [{name: "- Select (BETA) -", value: ""}];
-			var charClassFilter = ("getCharClass" in window)? getCharClass() : "";
 			searchList.forEach(function(itm){
 				if (!charClassFilter || !itm.group || itm.group == "All" || itm.group == charClassFilter){
 					selectOptions.push({
