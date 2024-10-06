@@ -335,7 +335,7 @@ function buildCalculator(containerEle, options){
 		}, baseArmor);
 		addResult("Total armor", totalArmor, undefined, armorItemColor, "Total armor including all modifiers.");
 		var physicalDrFromArmor = Math.min(0.85, calculateArmorDr(totalArmor, data.enemyLevel));
-		addResult("Physical DR from armor", Math.round(physicalDrFromArmor * 100).toLocaleString() + "%",
+		addResult("Physical DR from armor (S6 BETA)", Math.round(physicalDrFromArmor * 100).toLocaleString() + "%",
 				undefined, armorItemColor, "Physical damage reduction based on total armor and enemy level.");
 		var armorDiffToCap = calculateMissingOrExcessArmor(totalArmor, data.enemyLevel);
 		addResult("Armor required for 85% cap", "" + Math.round(armorDiffToCap).toLocaleString(),
