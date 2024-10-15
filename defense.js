@@ -334,8 +334,8 @@ function buildCalculator(containerEle, options){
 			}
 		}, baseArmor);
 		addResult("Total armor", totalArmor, undefined, armorItemColor, "Total armor including all modifiers.");
-		var physicalDrFromArmor = Math.min(0.85, calculateArmorDr(totalArmor, data.enemyLevel));
-		addResult("Physical DR from armor (S6 BETA)", Math.round(physicalDrFromArmor * 100).toLocaleString() + "%",
+		var physicalDrFromArmor = calculateArmorDr(totalArmor, data.enemyLevel);
+		addResult("Physical DR from armor (approx.)", Math.round(physicalDrFromArmor * 100).toLocaleString() + "%",
 				undefined, armorItemColor, "Physical damage reduction based on total armor and enemy level.");
 		var armorDiffToCap = calculateMissingOrExcessArmor(totalArmor, data.enemyLevel);
 		addResult("Armor required for 85% cap", "" + Math.round(armorDiffToCap).toLocaleString(),
@@ -408,33 +408,20 @@ function buildCalculator(containerEle, options){
 	function calculateArmorFromStrength(strength){
 		return strength/5;
 	}
-	function calculateArmorDr(playerArmor, monsterLevel){
+	function calculateArmorDr(playerArmor, playerAndMonsterLevel){
 		//season 6 armor cap is 1000 now
 		if (playerArmor >= 1000) return 0.85;
+		else if (playerArmor <= 0) return 0.0;
 		else{
-			//TODO: Season 6 rough first guess - fix as soon there is data
-			return (playerArmor/1000 * 0.85);
+			//New beta version formula (approx.):
+			var c1 = (1.599 * Math.exp(playerAndMonsterLevel/8.901 - 8.680) + 1.025);
+			var x = playerArmor/(3.13 * playerAndMonsterLevel) - 3.8;
+			var dr = 85 * c1 * (Math.exp(x) / (1 + Math.exp(x))) - 3.0;
+			return (Math.max(0, Math.min(0.85, dr/100)));
 		}
-		/*
-		//season 4 armor cap is 9230
-		if (playerArmor >= 9230) return 0.85;
-		//Reference by SkyLineOW for pre season 6 versions:
-		//https://www.reddit.com/r/Diablo/comments/152gd9u/i_mostly_cracked_the_d4_armor_formula_and_made_a/
-		var w0 = 24.95675343;
-		var w1 = 1.57703526;
-		var w2 = 0.1713152031;
-		var w3 = 1.202030852;
-		var w4 = 49.91077422;
-		var w5 = 0.06294813546;
-		var w6 = 0.3086344059;
-		var diff = Math.max(0, playerArmor - monsterLevel * w0);
-		var slope =  w1 / monsterLevel;
-		var corr = Math.max(0, (monsterLevel - w4) / w5) ** w6;
-		return (((diff * w2) ** w3 * slope) + corr) / 100;
-		*/
 	}
 	function calculateMissingOrExcessArmor(initArmor, monsterLevel, lastArmor, searchDir){
-		//TODO: fix for season 6
+		//season 6 is simple:
 		return Math.max(0, 1000 - initArmor);
 		/*
 		//brute force search for best armor
@@ -452,8 +439,7 @@ function buildCalculator(containerEle, options){
 			return calculateMissingOrExcessArmor(initArmor, monsterLevel, lastArmor, searchDir);
 		}else{
 			return lastArmor;
-		}
-		*/
+		}*/
 	}
 	
 	function getData(){
