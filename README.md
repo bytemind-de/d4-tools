@@ -62,6 +62,7 @@ URL: https://bytemind-de.github.io/apps/d4/defense.html
 
 - Add damage groups to be able to calculate defense for multiple attack types at the same time (close, distant, fire, poison, etc.)
 - Take dodge into account (or at least show it as well)
+- Take block chance into account
 - Simplify handling of rubies and paragon nodes (% life), so you don't have to enter every single one
 
 ### Known bugs / quirks
