@@ -610,15 +610,20 @@ html.dark .color-reduction-mod-light {
 	position: relative;
 	display: flex;
 }
-.pop-up-message-box .pop-up-content {
-	width: 100%;
-	overflow-y: auto;
-}
 html.dark .pop-up-message-box {
 	border: 1px solid #424242;
 	background: rgba(10, 10, 10, 0.8) linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0%, rgba(255, 255, 255, 0.01) 100%);
 	color: #D2C8AE;
 	box-shadow: 0 0 4px rgba(0, 0, 0, 0.66), inset 0 0 10px rgba(255, 255, 255, 0.1);
+}
+.pop-up-message-box .pop-up-content {
+	width: 100%;
+	overflow-y: auto;
+}
+.pop-up-message-box .pop-up-buttons {
+	width: 100%;
+	margin: 8px 0px;
+	display: flex;
 }
 .pop-up-message-box-close,
 .section-vis-button {

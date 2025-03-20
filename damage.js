@@ -888,9 +888,9 @@ function buildCalculator(containerEle, options){
 		addAdditiveMod("Example: Damage on Monday", 69);
 		addMultiplierMod("Example: Crit. Bonus", 18, false, ["crit"]);
 		addMultiplierMod("Example: Tibaults Will", 40);
-		addReductionMod("Monster damage reduction (lvl 60)", 97);
+		addReductionMod("Monster damage reduction (lvl 60)", 85);
 	}else if (!options?.cfg && options?.addDemoContent !== false){
-		addReductionMod("Monster damage reduction (lvl 60)", 97);
+		addReductionMod("Monster damage reduction (lvl 60)", 85);
 	}
 	//Show/hide footer?
 	if (!options?.showFooter){

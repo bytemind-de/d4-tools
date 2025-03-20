@@ -200,7 +200,18 @@ function showPopUp(content, buttons, options){
 	}
 	//buttons
 	if (buttons && buttons.length){
-		//TODO: implement
+		var btnBox = document.createElement("div");
+		btnBox.className = "pop-up-buttons";
+		popUpBox.appendChild(btnBox);
+		buttons.forEach(function(btn, i){
+			var btnEle = document.createElement("button");
+			btnEle.textContent = btn.name || ("Button " + i);	
+			btnEle.addEventListener("click", function(){
+				if (typeof btn.fun == "function") btn.fun();
+				if (btn.closeAfterClick) popUpOverlay.popUpClose();
+			});
+			btnBox.appendChild(btnEle);
+		});
 	}
 	//close function
 	var isClosed = false;
