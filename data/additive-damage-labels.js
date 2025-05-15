@@ -17,6 +17,7 @@ var additiveDamageLabelsList = [
 	{label: "Damage while Fortified", group: "", types: []},
 	{label: "Damage while Healthy", group: "", types: []},
 	{label: "Damage with Basic Skill", group: "", types: []},
+	{label: "Damage with Bleeding", group: "", types: []},
 	{label: "Damage with Bone", group: "", types: []},
 	{label: "Damage with Cold", group: "", types: []},
 	{label: "Damage with Core", group: "", types: []},
